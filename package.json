@@ -1,0 +1,45 @@
+{
+  "name": "tshirt-shop-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "nyc mocha --require babel-register --exit",
+    "dev": "babel-watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajeman/tshirt-shop-backend.git"
+  },
+  "author": "rajeman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rajeman/tshirt-shop-backend/issues"
+  },
+  "homepage": "https://github.com/rajeman/tshirt-shop-backend#readme",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1"
+  },
+  "dependencies": {
+    "@babel/core": "^7.4.5",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-watch": "^7.0.0",
+    "cors": "^2.8.5",
+    "coveralls": "^3.0.4",
+    "dotenv": "^8.0.0",
+    "expect": "^24.8.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "mocha-lcov-reporter": "^1.3.0",
+    "morgan": "^1.9.1",
+    "supertest": "^4.0.2"
+  }
+}
