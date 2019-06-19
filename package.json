@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "nyc mocha --require babel-register --exit",
+    "test": "NODE_ENV=test nyc mocha --require babel-register --exit",
     "dev": "babel-watch server.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },

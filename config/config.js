@@ -7,7 +7,10 @@ module.exports = {
   },
   test: {
     url: process.env.TEST_DATABASE_URL,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    dialectOptions: {
+      multipleStatements: true
+    }
   },
   production: {
     url: process.env.DATABASE_URL,

@@ -2,6 +2,8 @@ import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import productRoutes from './routes';
+import { errorHandler } from './middlewares';
 
 dotenv.config();
 
@@ -22,5 +24,8 @@ app.use(
     saveUninitialized: false
   })
 );
+
+app.use('/api/v1/products', productRoutes);
+app.use(errorHandler);
 
 export default app;
