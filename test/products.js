@@ -69,6 +69,22 @@ describe('PRODUCTS TEST SUITE', () => {
     });
   });
 
+  describe('Get Single Product', () => {
+    it('should return the product with the supplied product_id', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.product_id).toEqual(1);
+    });
+
+    it('should return 404 error if product is not found', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/1000`)
+        .set('Accept', 'application/json');
+      expect(response.status).toEqual(404);
+    });
+  });
+
   describe('Search Products', () => {
     it('should return all products with matching description', async () => {
       const response = await request(app)

@@ -1,3 +1,7 @@
+import models from '../models';
+
+const { Product } = models;
+
 export default {
   isValidProductQueryParams(req, res, next) {
     const { limit, page } = req.query;
@@ -44,6 +48,18 @@ export default {
         code: 'USR_02',
         message: 'you must supply the query_string param',
         query_string: 'undefined',
+        status: 500
+      });
+    }
+    next();
+  },
+  async verifyProductExists(req, res, next) {
+    const product = await Product.findByPk(req.params.product_id);
+    if (!product) {
+      return res.status(404).send({
+        code: 'USR_02',
+        message: 'product with the supplied product_id not found',
+        product_id: req.params.product_id,
         status: 500
       });
     }

@@ -43,5 +43,9 @@ export default {
       count: allProducts.count,
       rows: allProducts.rows
     });
+  },
+  async getSingleProduct(req, res) {
+    const product = await Product.findByPk(req.params.product_id);
+    return res.send(product);
   }
 };
