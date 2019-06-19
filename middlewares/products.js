@@ -36,5 +36,17 @@ export default {
       });
     }
     next();
+  },
+  isQueryStringSupplied(req, res, next) {
+    const queryString = req.query.query_string;
+    if (!queryString) {
+      return res.status(400).send({
+        code: 'USR_02',
+        message: 'you must supply the query_string param',
+        query_string: 'undefined',
+        status: 500
+      });
+    }
+    next();
   }
 };

@@ -35,8 +35,8 @@ describe('PRODUCTS TEST SUITE', () => {
     });
   });
 
-  describe('Validate Params', () => {
-    it('should not permit a non-integer limit as param', async () => {
+  describe('Validate Product Params', () => {
+    it('should not permit specifying non-integer limit as param', async () => {
       const response = await request(app)
         .get(`${productsUrl}?limit=e`)
         .set('Accept', 'application/json');
@@ -50,13 +50,31 @@ describe('PRODUCTS TEST SUITE', () => {
       expect(response.body.message).toEqual('page must be a positive integer');
     });
 
-    it('should permit a non-integer description_length as param', async () => {
+    it('should not permit a non-integer description_length', async () => {
       const response = await request(app)
         .get(`${productsUrl}?description_length=e`)
         .set('Accept', 'application/json');
       expect(response.body.message).toEqual(
         'description_length must be at least 1'
       );
+    });
+
+    it('should not permit searching without search param', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/search`)
+        .set('Accept', 'application/json');
+      expect(response.body.message).toEqual(
+        'you must supply the query_string param'
+      );
+    });
+  });
+
+  describe('Search Products', () => {
+    it('should return all products with matching description', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/search?query_string=beautiful&limit=5&page=2`)
+        .set('Accept', 'application/json');
+      expect(response.body.rows[0].description).toContain('beautiful');
     });
   });
 });
