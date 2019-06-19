@@ -1,5 +1,5 @@
 import express from 'express';
-import products from '../controllers';
+import { products } from '../controllers';
 import { productsMiddleware } from '../middlewares';
 
 const { getAllProducts, getSingleProduct } = products;
