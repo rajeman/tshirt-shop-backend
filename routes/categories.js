@@ -1,6 +1,10 @@
 import express from 'express';
 import { categories } from '../controllers';
-import { productsMiddleware, categoriesMiddleware } from '../middlewares';
+import {
+  productsMiddleware,
+  categoriesMiddleware,
+  departmentsMiddleware
+} from '../middlewares';
 
 const {
   getAllCategories,
@@ -8,11 +12,8 @@ const {
   getProductCategories,
   getDepartmentCategories
 } = categories;
-const {
-  isValidProductQueryParams,
-  verifyProductExists,
-  verifyDepartmentExists
-} = productsMiddleware;
+const { isValidProductQueryParams, verifyProductExists } = productsMiddleware;
+const { verifyDepartmentExists } = departmentsMiddleware;
 const { verifyOrderParams, verifyCategoryExists } = categoriesMiddleware;
 
 const categoriesRouter = express.Router();

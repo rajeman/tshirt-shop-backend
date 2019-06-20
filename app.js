@@ -2,7 +2,12 @@ import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { productRoutes, categoryRoutes, attributeRoutes } from './routes';
+import {
+  productRoutes,
+  categoryRoutes,
+  attributeRoutes,
+  departmentRoutes
+} from './routes';
 import { errorHandler } from './middlewares';
 
 dotenv.config();
@@ -28,6 +33,7 @@ app.use(
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/attributes', attributeRoutes);
+app.use('/api/v1/departments', departmentRoutes);
 app.use(errorHandler);
 
 export default app;
