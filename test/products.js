@@ -93,4 +93,22 @@ describe('PRODUCTS TEST SUITE', () => {
       expect(response.body.rows[0].description).toContain('beautiful');
     });
   });
+
+  describe('Get Products in a Department', () => {
+    it('should return all products in the supplied department', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/inDepartment/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.count).toEqual(35);
+    });
+  });
+
+  describe('Get Products in a Category', () => {
+    it('should return all products in the supplied category', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/inCategory/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.count).toEqual(18);
+    });
+  });
 });
