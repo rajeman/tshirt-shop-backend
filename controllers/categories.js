@@ -30,7 +30,7 @@ export default {
   async getProductCategories(req, res) {
     const productId = req.params.product_id;
     const productCategories = await ProductCategory.findAll({
-      where: { product_id: productId },
+      wheres: { product_id: productId },
       include: [
         {
           model: Category,

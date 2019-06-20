@@ -28,4 +28,19 @@ describe('ATTRIBUTES TEST SUITE', () => {
       expect(response.status).toEqual(404);
     });
   });
+
+  describe('Get Product Attributes', () => {
+    it('should return the attributes of the products', async () => {
+      const response = await request(app)
+        .get(`${attributesUrl}/inProduct/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(14);
+    });
+    it('should return 404 error for non-existing attribute', async () => {
+      const response = await request(app)
+        .get(`${attributesUrl}/values/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(5);
+    });
+  });
 });
