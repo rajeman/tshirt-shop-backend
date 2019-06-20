@@ -1,6 +1,8 @@
+import Sequelize from 'sequelize';
 import models from '../models';
 
-const { Category } = models;
+const { ne } = Sequelize.Op;
+const { Category, ProductCategory } = models;
 
 export default {
   async getAllCategories(req, res) {
@@ -24,5 +26,19 @@ export default {
     const categoryId = req.params.category_id;
     const category = await Category.findByPk(categoryId);
     return res.send(category);
+  },
+  async getProductCategories(req, res) {
+    const productId = req.params.product_id;
+    const productCategory = await ProductCategory.findAll({
+      where: { product_id: productId },
+      include: [
+        {
+          model: Category,
+          attributes: ['category_id', 'department_id', 'name'],
+          where: { category_id: { [ne]: null } }
+        }
+      ]
+    });
+    return res.send(productCategory.map(item => item.Category));
   }
 };

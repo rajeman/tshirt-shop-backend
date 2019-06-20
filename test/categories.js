@@ -55,4 +55,13 @@ describe('CATEGORIES TEST SUITE', () => {
       expect(response.status).toEqual(404);
     });
   });
+
+  describe('Get Product Category', () => {
+    it('should get the categories of the specified product', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/inProduct/1`)
+        .set('Accept', 'application/json');
+      expect(response.body[0]).toHaveProperty('category_id');
+    });
+  });
 });
