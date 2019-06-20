@@ -56,12 +56,28 @@ describe('CATEGORIES TEST SUITE', () => {
     });
   });
 
-  describe('Get Product Category', () => {
+  describe('Get Product Categories', () => {
     it('should get the categories of the specified product', async () => {
       const response = await request(app)
         .get(`${categoriesUrl}/inProduct/1`)
         .set('Accept', 'application/json');
       expect(response.body[0]).toHaveProperty('category_id');
+    });
+  });
+
+  describe('Get Department Categories', () => {
+    it('should get the categories of the specified department', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/inDepartment/1`)
+        .set('Accept', 'application/json');
+      expect(response.body[0]).toHaveProperty('department_id');
+    });
+
+    it('should return 404 error if department is not found', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/inDepartment/100`)
+        .set('Accept', 'application/json');
+      expect(response.status).toEqual(404);
     });
   });
 });

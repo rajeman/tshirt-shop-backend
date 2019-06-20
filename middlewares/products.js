@@ -1,6 +1,6 @@
 import models from '../models';
 
-const { Product } = models;
+const { Product, Department } = models;
 
 export default {
   isValidProductQueryParams(req, res, next) {
@@ -60,6 +60,18 @@ export default {
         code: 'USR_02',
         message: 'product with the supplied product_id not found',
         product_id: req.params.product_id,
+        status: 500
+      });
+    }
+    next();
+  },
+  async verifyDepartmentExists(req, res, next) {
+    const department = await Department.findByPk(req.params.department_id);
+    if (!department) {
+      return res.status(404).send({
+        code: 'USR_02',
+        message: 'department with the supplied department_id not found',
+        department_id: req.params.department_id,
         status: 500
       });
     }

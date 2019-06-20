@@ -5,9 +5,14 @@ import { productsMiddleware, categoriesMiddleware } from '../middlewares';
 const {
   getAllCategories,
   getSingleCategory,
-  getProductCategories
+  getProductCategories,
+  getDepartmentCategories
 } = categories;
-const { isValidProductQueryParams, verifyProductExists } = productsMiddleware;
+const {
+  isValidProductQueryParams,
+  verifyProductExists,
+  verifyDepartmentExists
+} = productsMiddleware;
 const { verifyOrderParams, verifyCategoryExists } = categoriesMiddleware;
 
 const categoriesRouter = express.Router();
@@ -23,5 +28,9 @@ categoriesRouter
 categoriesRouter
   .route('/inProduct/:product_id')
   .get(verifyProductExists, getProductCategories);
+
+categoriesRouter
+  .route('/inDepartment/:department_id')
+  .get(verifyDepartmentExists, getDepartmentCategories);
 
 export default categoriesRouter;

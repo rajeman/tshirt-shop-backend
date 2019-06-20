@@ -29,7 +29,7 @@ export default {
   },
   async getProductCategories(req, res) {
     const productId = req.params.product_id;
-    const productCategory = await ProductCategory.findAll({
+    const productCategories = await ProductCategory.findAll({
       where: { product_id: productId },
       include: [
         {
@@ -39,6 +39,13 @@ export default {
         }
       ]
     });
-    return res.send(productCategory.map(item => item.Category));
+    return res.send(productCategories.map(item => item.Category));
+  },
+  async getDepartmentCategories(req, res) {
+    const departmentId = req.params.department_id;
+    const departmentCategories = await Category.findAll({
+      where: { department_id: departmentId }
+    });
+    return res.send(departmentCategories);
   }
 };

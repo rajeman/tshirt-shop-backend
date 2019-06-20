@@ -1,14 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-  const Category = sequelize.define(
-    'Category',
+  const Department = sequelize.define(
+    'Department',
     {
-      category_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true
-      },
       department_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        primaryKey: true
       },
       description: {
         type: DataTypes.TEXT,
@@ -25,12 +21,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Category.associate = (models) => {
-    Category.belongsTo(models.Department, {
-      foreignKey: 'department_id',
-      onDelete: 'CASCADE'
-    });
-  };
-
-  return Category;
+  return Department;
 };
