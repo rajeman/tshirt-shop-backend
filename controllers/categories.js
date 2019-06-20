@@ -19,5 +19,10 @@ export default {
       count: allCategories.count,
       rows: allCategories.rows
     });
+  },
+  async getSingleCategory(req, res) {
+    const categoryId = req.params.category_id;
+    const category = await Category.findByPk(categoryId);
+    return res.send(category);
   }
 };

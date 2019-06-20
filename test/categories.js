@@ -39,4 +39,20 @@ describe('CATEGORIES TEST SUITE', () => {
       );
     });
   });
+
+  describe('Get Single Category', () => {
+    it('should get the category with specified id in params', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/2`)
+        .set('Accept', 'application/json');
+      expect(response.body.category_id).toEqual(2);
+    });
+
+    it('should return 404 error if category is not found', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/100`)
+        .set('Accept', 'application/json');
+      expect(response.status).toEqual(404);
+    });
+  });
 });

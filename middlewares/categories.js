@@ -1,3 +1,6 @@
+import models from '../models';
+
+const { Category } = models;
 export default {
   verifyOrderParams(req, res, next) {
     const { order } = req.query;
@@ -20,6 +23,19 @@ export default {
           "The order does not match format:'field,(DESC|ASC)'."
           + " Where field is 'name' or 'category_id'",
         order
+      });
+    }
+    next();
+  },
+  async verifyCategoryExists(req, res, next) {
+    const categoryId = req.params.category_id;
+    const category = await Category.findByPk(categoryId);
+    if (!category) {
+      return res.status(404).send({
+        status: 500,
+        code: 'USR_02',
+        message: 'category not found',
+        category_id: categoryId
       });
     }
     next();
