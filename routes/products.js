@@ -28,7 +28,9 @@ productsRouter
   .route('/search')
   .get(isQueryStringSupplied, isValidProductQueryParams, getAllProducts);
 
-productsRouter.route('/:product_id').get(verifyProductExists, getSingleProduct);
+productsRouter
+  .route(['/:product_id', '/:product_id/details'])
+  .get(verifyProductExists, getSingleProduct);
 
 productsRouter
   .route('/inDepartment/:department_id')
