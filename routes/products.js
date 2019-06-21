@@ -10,7 +10,8 @@ const {
   getAllProducts,
   getSingleProduct,
   getDepartmentProducts,
-  getCategoryProducts
+  getCategoryProducts,
+  getProductLocations
 } = products;
 const {
   isValidProductQueryParams,
@@ -39,5 +40,9 @@ productsRouter
 productsRouter
   .route('/inCategory/:category_id')
   .get(verifyCategoryExists, getCategoryProducts);
+
+productsRouter
+  .route('/:product_id/locations')
+  .get(verifyProductExists, getProductLocations);
 
 export default productsRouter;

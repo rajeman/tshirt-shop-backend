@@ -1,7 +1,9 @@
 import Sequelize from 'sequelize';
 import models from '../models';
 
-const { Product, ProductCategory, Category } = models;
+const {
+  Product, ProductCategory, Category, Department
+} = models;
 const { like, ne } = Sequelize.Op;
 
 const defaultLimit = 20;
@@ -161,5 +163,31 @@ export default {
         display: item.display
       }))
     });
+  },
+  async getProductLocations(req, res) {
+    const productId = req.params.product_id;
+    const productLocations = await Product.findByPk(productId, {
+      include: [
+        {
+          model: ProductCategory,
+          required: true,
+          include: [
+            {
+              model: Category,
+              include: [{ model: Department }],
+              required: true
+            }
+          ]
+        }
+      ]
+    });
+    return res.send(
+      productLocations.ProductCategories.map(productCategory => ({
+        category_id: productCategory.Category.category_id,
+        category_name: productCategory.Category.name,
+        department_id: productCategory.Category.Department.department_id,
+        department_name: productCategory.Category.Department.name
+      }))
+    );
   }
 };

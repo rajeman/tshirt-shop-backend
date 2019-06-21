@@ -111,4 +111,13 @@ describe('PRODUCTS TEST SUITE', () => {
       expect(response.body.count).toEqual(18);
     });
   });
+
+  describe('Get Product Locations', () => {
+    it('should return all locations of the suplied product', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/1/locations`)
+        .set('Accept', 'application/json');
+      expect(response.body[0].category_name).toEqual('French');
+    });
+  });
 });
