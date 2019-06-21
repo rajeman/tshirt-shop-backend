@@ -1,6 +1,7 @@
 import expect from 'expect';
 import request from 'supertest';
 import app from '../app';
+import user from './001-base';
 
 const customersUrl = '/api/v1/customers';
 
@@ -11,11 +12,11 @@ describe('CUSTOMERS TEST SUITE', () => {
         .post(customersUrl)
         .set('Accept', 'application/json')
         .send({
-          name: 'Habib',
-          email: 'habib7019@gmail.com',
+          name: 'Habib2',
+          email: 'habib7019t@gmail.com',
           password: 'habibhabib'
         });
-      expect(response.body.name).toEqual('Habib');
+      expect(response.body.customer.name).toEqual('Habib2');
     });
 
     it('should not register a customer with name in use', async () => {
@@ -23,8 +24,8 @@ describe('CUSTOMERS TEST SUITE', () => {
         .post(customersUrl)
         .set('Accept', 'application/json')
         .send({
-          name: 'Habib',
-          email: 'habib7019@gmail.com',
+          name: 'Habib2',
+          email: 'habib7019t@gmail.com',
           password: 'habibhabib'
         });
       expect(response.status).toEqual(409);
@@ -127,6 +128,51 @@ describe('CUSTOMERS TEST SUITE', () => {
       expect(response.body.message).toEqual(
         'password must be within 6 and 20 non-whitespace characters'
       );
+    });
+  });
+
+  describe('Login Customer', () => {
+    it('should login a customer with valid details', async () => {
+      const response = await request(app)
+        .post(`${customersUrl}/login`)
+        .set('Accept', 'application/json')
+        .send({
+          email: 'habib7019t@gmail.com',
+          password: 'habibhabib'
+        });
+      expect(response.body.customer.name).toEqual('Habib2');
+    });
+
+    it('should not login a customer with email field missing', async () => {
+      const response = await request(app)
+        .post(`${customersUrl}/login`)
+        .set('Accept', 'application/json')
+        .send({
+          password: 'habibhabib'
+        });
+      expect(response.body.message).toEqual('The email field is required');
+    });
+
+    it('should not login a customer with invalid email', async () => {
+      const response = await request(app)
+        .post(`${customersUrl}/login`)
+        .set('Accept', 'application/json')
+        .send({
+          email: 'notuser@gmail.com',
+          password: 'habibhabib'
+        });
+      expect(response.body.message).toEqual('invalid email or password');
+    });
+
+    it('should login a customer with invalid password', async () => {
+      const response = await request(app)
+        .post(`${customersUrl}/login`)
+        .set('Accept', 'application/json')
+        .send({
+          email: 'habib7019t@gmail.com',
+          password: 'habibhabibt'
+        });
+      expect(response.body.message).toEqual('invalid email or password');
     });
   });
 });

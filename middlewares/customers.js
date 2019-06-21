@@ -1,22 +1,25 @@
 import Sequelize from 'sequelize';
 import models from '../models';
+import validators from '../helpers';
 
 const { like } = Sequelize.Op;
 const { Customer } = models;
+const { ensureRequiredFields } = validators;
 
 export default {
   async verifyRegistrationFields(req, res, next) {
-    const requiredFields = ['name', 'email', 'password'];
-    for (let i = 0; i < requiredFields.length; i++) {
-      const field = requiredFields[i];
-      if (!req.body[field]) {
-        return res.status(400).send({
-          code: 'USR_03',
-          message: `The ${field} field is required`,
-          field,
-          status: 400
-        });
-      }
+    const invalidField = ensureRequiredFields(req, [
+      'name',
+      'email',
+      'password'
+    ]);
+    if (invalidField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${invalidField} field is required`,
+        field: invalidField,
+        status: 400
+      });
     }
     const { name, email, password } = req.body;
     if (`${name}`.trim().length < 3 || `${name}`.trim().length > 30) {
@@ -81,6 +84,41 @@ export default {
         status: 409
       });
     }
+    next();
+  },
+
+  async verifyLoginFields(req, res, next) {
+    const invalidField = ensureRequiredFields(req, ['email', 'password']);
+    if (invalidField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${invalidField} field is required`,
+        field: invalidField,
+        status: 400
+      });
+    }
+    const { email, password } = req.body;
+    const customer = await Customer.findOne({
+      where: { email: { [like]: email.trim() } }
+    });
+    if (!customer) {
+      return res.status(400).send({
+        code: 'USR_01',
+        message: 'invalid email or password',
+        field: 'email/password',
+        status: 400
+      });
+    }
+    const validPassword = await customer.validPassword(password);
+    if (!validPassword) {
+      return res.status(400).send({
+        code: 'USR_01',
+        message: 'invalid email or password',
+        field: 'email/password',
+        status: 400
+      });
+    }
+    req.customer = customer;
     next();
   }
 };
