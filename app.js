@@ -6,7 +6,8 @@ import {
   productRoutes,
   categoryRoutes,
   attributeRoutes,
-  departmentRoutes
+  departmentRoutes,
+  customerRoutes
 } from './routes';
 import { errorHandler } from './middlewares';
 
@@ -34,6 +35,7 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/attributes', attributeRoutes);
 app.use('/api/v1/departments', departmentRoutes);
+app.use('/api/v1/customers', customerRoutes);
 app.use(errorHandler);
 
 export default app;

@@ -1,10 +1,13 @@
+import bcrypt from 'bcrypt';
+
 module.exports = (sequelize, DataTypes) => {
   const Customer = sequelize.define(
     'Customer',
     {
       customer_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
       },
       name: {
         type: DataTypes.STRING,
@@ -39,8 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       country: {
         type: DataTypes.STRING
       },
-      shipping_region: {
-        type: DataTypes.STRING
+      shipping_region_id: {
+        type: DataTypes.INTEGER
       },
       day_phone: {
         type: DataTypes.STRING
@@ -48,15 +51,29 @@ module.exports = (sequelize, DataTypes) => {
       eve_phone: {
         type: DataTypes.STRING
       },
-      mov_phone: {
+      mob_phone: {
         type: DataTypes.STRING
       }
     },
     {
       freezeTableName: true,
-      timestamps: false
+      timestamps: false,
+      hooks: {
+        beforeCreate: customer => customer.password && customer.hashPassword(),
+        beforeUpdate: customer => customer.password && customer.hashPassword()
+      }
     }
   );
+
+  Customer.prototype.hashPassword = async function hashPassword() {
+    const saltRounds = 9;
+    this.password = await bcrypt.hash(this.password, saltRounds);
+    return this.password;
+  };
+
+  Customer.prototype.validPassword = function validPassword(password) {
+    return bcrypt.compare(password, this.password);
+  };
 
   return Customer;
 };
