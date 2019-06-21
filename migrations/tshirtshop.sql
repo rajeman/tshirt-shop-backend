@@ -369,3 +369,13 @@ INSERT INTO `shipping` (`shipping_id`,   `shipping_type`,
 INSERT INTO `tax` (`tax_id`, `tax_type`, `tax_percentage`) VALUES
        (1, 'Sales Tax at 8.5%', 8.50),
        (2, 'No Tax',            0.00);
+
+-- Populate review table
+INSERT INTO `review` (`review_id`, `customer_id`, `product_id`, `review`, `rating`, `created_on`) VALUES
+       (1, 1, 1, 'This is a great product', 4, '1970-01-01 00:00:00' ),
+       (2, 1, 2, 'I dont like this product', 2, '1970-01-01 00:00:00' );
+
+-- Populate customer table
+INSERT INTO `customer` (`customer_id`, `name`, `email`, `password`) VALUES
+       (1, 'Rajeman', 'rajeman@gmail.com', 'password'),
+       (2, 'Jesse', 'jesse@gmail.com', 'password');

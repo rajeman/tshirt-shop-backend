@@ -2,7 +2,12 @@ import Sequelize from 'sequelize';
 import models from '../models';
 
 const {
-  Product, ProductCategory, Category, Department
+  Product,
+  ProductCategory,
+  Category,
+  Department,
+  Review,
+  Customer
 } = models;
 const { like, ne } = Sequelize.Op;
 
@@ -69,7 +74,8 @@ export default {
               where: { department_id: departmentId },
               required: true
             }
-          ]
+          ],
+          required: true
         }
       ],
       distinct: true,
@@ -166,27 +172,42 @@ export default {
   },
   async getProductLocations(req, res) {
     const productId = req.params.product_id;
-    const productLocations = await Product.findByPk(productId, {
+    const productLocations = await ProductCategory.findAll({
+      where: { product_id: productId },
       include: [
         {
-          model: ProductCategory,
-          required: true,
-          include: [
-            {
-              model: Category,
-              include: [{ model: Department }],
-              required: true
-            }
-          ]
+          model: Category,
+          include: [{ model: Department }],
+          required: true
         }
       ]
     });
     return res.send(
-      productLocations.ProductCategories.map(productCategory => ({
+      productLocations.map(productCategory => ({
         category_id: productCategory.Category.category_id,
         category_name: productCategory.Category.name,
         department_id: productCategory.Category.Department.department_id,
         department_name: productCategory.Category.Department.name
+      }))
+    );
+  },
+  async getProductReviews(req, res) {
+    const productId = req.params.product_id;
+    const productReviews = await Review.findAll({
+      where: { product_id: productId },
+      include: [
+        {
+          model: Customer,
+          attributes: ['name']
+        }
+      ]
+    });
+    return res.send(
+      productReviews.map(review => ({
+        name: review.Customer ? review.Customer.name : undefined,
+        review: review.review,
+        rating: review.rating,
+        created_on: review.created_on
       }))
     );
   }

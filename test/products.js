@@ -120,4 +120,13 @@ describe('PRODUCTS TEST SUITE', () => {
       expect(response.body[0].category_name).toEqual('French');
     });
   });
+
+  describe('Get Product Reviews', () => {
+    it('should return all reviews of the suplied product', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/1/reviews`)
+        .set('Accept', 'application/json');
+      expect(response.body[0].name).toEqual('Rajeman');
+    });
+  });
 });
