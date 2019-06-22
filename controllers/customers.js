@@ -25,7 +25,7 @@ export default {
       accessToken: `Bearer ${generateToken({
         customer_id: customer.customer_id,
         name: customer.name,
-        role: customer
+        role: 'customer'
       })}`,
       expires_in: expiryTime
     });
@@ -52,9 +52,27 @@ export default {
       accessToken: `Bearer ${generateToken({
         customer_id: customer.customer_id,
         name: customer.name,
-        role: customer
+        role: 'customer'
       })}`,
       expires_in: expiryTime
     });
+  },
+  async updateCustomer(req, res) {
+    const { username, email, password } = req.body;
+    const dayPhone = req.body.day_phone;
+    const evePhone = req.body.eve_phone;
+    const mobPhone = req.body.mob_phone;
+
+    const customer = await Customer.findByPk(req.decoded.customer_id);
+    const updatedCustomer = await customer.update({
+      username,
+      email,
+      password: password || customer.password,
+      day_phone: dayPhone || customer.dayPhone,
+      eve_phone: evePhone || customer.evePhone,
+      mob_phone: mobPhone || customer.mobPhone
+    });
+    updatedCustomer.password = undefined;
+    return res.send(updatedCustomer);
   }
 };

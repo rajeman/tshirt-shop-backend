@@ -104,7 +104,7 @@ describe('CUSTOMERS TEST SUITE', () => {
       expect(response.body.message).toEqual('email is invalid');
     });
 
-    it('should not accept invalid email field (> 40 chars)', async () => {
+    it('should not accept email field greater than 40 chars', async () => {
       const response = await request(app)
         .post(customersUrl)
         .set('Accept', 'application/json')
@@ -113,7 +113,7 @@ describe('CUSTOMERS TEST SUITE', () => {
           email: 'habib7019uuuuuuuuuuuuuuuuuuuuuuu@gmail.com',
           password: 'habibhabib'
         });
-      expect(response.body.message).toEqual('email too long');
+      expect(response.body.message).toEqual('email is invalid');
     });
 
     it('should not accept invalid password field (5 < p < 21)', async () => {
@@ -164,7 +164,7 @@ describe('CUSTOMERS TEST SUITE', () => {
       expect(response.body.message).toEqual('invalid email or password');
     });
 
-    it('should login a customer with invalid password', async () => {
+    it('should not login a customer with invalid password', async () => {
       const response = await request(app)
         .post(`${customersUrl}/login`)
         .set('Accept', 'application/json')
@@ -173,6 +173,125 @@ describe('CUSTOMERS TEST SUITE', () => {
           password: 'habibhabibt'
         });
       expect(response.body.message).toEqual('invalid email or password');
+    });
+  });
+
+  describe('Update Customer', () => {
+    it('should update a customer with valid required details', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com',
+          name: 'habibhabib'
+        });
+      expect(response.body.email).toEqual('habib7019@gmail.com');
+    });
+
+    it('should update a customer with valid eve_phone supplied', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com',
+          name: 'habibhabib',
+          eve_phone: '0819723801',
+          password: 'mynottoolongpassword'
+        });
+      expect(response.body.eve_phone).toEqual('0819723801');
+    });
+
+    it('should not update a customer with name not supplied', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com'
+        });
+      expect(response.body.message).toEqual('The name field is required');
+    });
+
+    it('should not update a customer with invalid day_phone', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com',
+          name: 'habibhabib',
+          day_phone: '7'
+        });
+      expect(response.body.message).toEqual(
+        'day_phone must be within 5 and 30 non-whitespace characters'
+      );
+    });
+
+    it('should not update a customer with password too short', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com',
+          name: 'habibhabib',
+          password: '123'
+        });
+      expect(response.body.message).toEqual(
+        'password must be within 6 and 20 non-whitespace characters'
+      );
+    });
+
+    it('should not update a customer with invalid email', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019gmail.com',
+          name: 'habibhabib'
+        });
+      expect(response.body.message).toEqual('email is invalid');
+    });
+
+    it('should not update a customer with invalid name', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019@gmail.com',
+          name: 'ha'
+        });
+      expect(response.body.message).toEqual(
+        'name must be within 3 and 30 characters'
+      );
+    });
+
+    it('should not update a customer with email in use', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib7019t@gmail.com',
+          name: 'habibhabib'
+        });
+      expect(response.body.message).toEqual('email in use');
+    });
+
+    it('should not update a customer with name in use', async () => {
+      const response = await request(app)
+        .put(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          email: 'habib70@gmail.com',
+          name: 'habib2'
+        });
+      expect(response.body.message).toEqual('name in use');
     });
   });
 });

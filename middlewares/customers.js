@@ -1,10 +1,14 @@
-import Sequelize from 'sequelize';
 import models from '../models';
 import validators from '../helpers';
 
-const { like } = Sequelize.Op;
 const { Customer } = models;
-const { ensureRequiredFields } = validators;
+const {
+  ensureRequiredFields,
+  verifyFieldLength,
+  verifyCustomerEmail,
+  verifyFieldInUse,
+  verifyOptionalFieldsLength
+} = validators;
 
 export default {
   async verifyRegistrationFields(req, res, next) {
@@ -22,7 +26,7 @@ export default {
       });
     }
     const { name, email, password } = req.body;
-    if (`${name}`.trim().length < 3 || `${name}`.trim().length > 30) {
+    if (verifyFieldLength(name, 3, 30)) {
       return res.status(400).send({
         code: 'USR_03',
         message: 'name must be within 3 and 30 characters',
@@ -30,11 +34,8 @@ export default {
         status: 400
       });
     }
-
-    if (
-      // eslint-disable-next-line no-useless-escape
-      !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(`${email}`.trim())
-    ) {
+    const invalidEmail = verifyCustomerEmail(email);
+    if (invalidEmail) {
       return res.status(400).send({
         code: 'USR_03',
         message: 'email is invalid',
@@ -42,17 +43,8 @@ export default {
         status: 400
       });
     }
-
-    if (`${email}`.trim().length > 40) {
-      return res.status(400).send({
-        code: 'USR_03',
-        message: 'email too long',
-        email,
-        status: 400
-      });
-    }
-
-    if (`${password}`.trim().length < 6 || `${password}`.trim().length > 20) {
+    const invalidPassword = verifyFieldLength(password, 6, 20);
+    if (invalidPassword) {
       return res.status(400).send({
         code: 'USR_03',
         message: 'password must be within 6 and 20 non-whitespace characters',
@@ -61,9 +53,7 @@ export default {
       });
     }
 
-    const nameInUse = await Customer.findOne({
-      where: { name: { [like]: `${name}`.trim() } }
-    });
+    const nameInUse = await verifyFieldInUse('name', name, Customer);
     if (nameInUse) {
       return res.status(409).send({
         code: 'USR_03',
@@ -73,9 +63,7 @@ export default {
       });
     }
 
-    const emailInUse = await Customer.findOne({
-      where: { email: { [like]: email.trim() } }
-    });
+    const emailInUse = await verifyFieldInUse('email', email, Customer);
     if (emailInUse) {
       return res.status(409).send({
         code: 'USR_03',
@@ -98,9 +86,7 @@ export default {
       });
     }
     const { email, password } = req.body;
-    const customer = await Customer.findOne({
-      where: { email: { [like]: email.trim() } }
-    });
+    const customer = await verifyFieldInUse('email', email, Customer);
     if (!customer) {
       return res.status(400).send({
         code: 'USR_01',
@@ -119,6 +105,88 @@ export default {
       });
     }
     req.customer = customer;
+    next();
+  },
+  async verifyUpdateFields(req, res, next) {
+    const invalidField = ensureRequiredFields(req, ['name', 'email']);
+    if (invalidField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${invalidField} field is required`,
+        field: invalidField,
+        status: 400
+      });
+    }
+    const { name, email, password } = req.body;
+    const invalidEmail = verifyCustomerEmail(email);
+    if (invalidEmail) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: 'email is invalid',
+        email,
+        status: 400
+      });
+    }
+    if (verifyFieldLength(name, 3, 30)) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: 'name must be within 3 and 30 characters',
+        name,
+        status: 400
+      });
+    }
+    if (password) {
+      const invalidPassword = verifyFieldLength(password, 6, 20);
+      if (invalidPassword) {
+        return res.status(400).send({
+          code: 'USR_03',
+          message: 'password must be within 6 and 20 non-whitespace characters',
+          password,
+          status: 400
+        });
+      }
+    }
+    const invalidOptionalField = verifyOptionalFieldsLength.bind(validators)(
+      req,
+      ['day_phone', 'eve_phone', 'mob_phone'],
+      5,
+      30
+    );
+    if (invalidOptionalField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        // eslint-disable-next-line max-len
+        message: `${invalidOptionalField} must be within 5 and 30 non-whitespace characters`,
+        [invalidOptionalField]: req.body[invalidOptionalField],
+        status: 400
+      });
+    }
+
+    const customerWithName = await verifyFieldInUse('name', name, Customer);
+    if (
+      customerWithName
+      && customerWithName.customer_id !== req.decoded.customer_id
+    ) {
+      return res.status(409).send({
+        code: 'USR_03',
+        message: 'name in use',
+        name,
+        status: 409
+      });
+    }
+
+    const customerWithEmail = await verifyFieldInUse('email', email, Customer);
+    if (
+      customerWithEmail
+      && customerWithEmail.customer_id !== req.decoded.customer_id
+    ) {
+      return res.status(409).send({
+        code: 'USR_03',
+        message: 'email in use',
+        email,
+        status: 409
+      });
+    }
     next();
   }
 };
