@@ -295,16 +295,6 @@ describe('CUSTOMERS TEST SUITE', () => {
     });
   });
 
-  describe('Get Customer', () => {
-    it('should not return the authorized customer', async () => {
-      const response = await request(app)
-        .get(customersUrl)
-        .set('Accept', 'application/json')
-        .set('user-key', user.token);
-      expect(response.body.name).toEqual('Habib');
-    });
-  });
-
   describe('Update Customer Address', () => {
     it('should update a customer with valid required details', async () => {
       const response = await request(app)
@@ -375,6 +365,46 @@ describe('CUSTOMERS TEST SUITE', () => {
       expect(response.body.message).toEqual(
         'region must be within 3 and 90 non-whitespace characters'
       );
+    });
+  });
+
+  describe('Update Credit Card', () => {
+    it('should update with a valid credit card number', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/creditCard`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ credit_card: '5500 0000 0000 0004' });
+      expect(response.body.credit_card).toEqual('******0004');
+    });
+
+    it('should not update with an invalid credit card number', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/creditCard`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ credit_card: '550099909090901' });
+      expect(response.body.message).toEqual('this is an invalid Credit Card');
+    });
+
+    it('should accept request with missing credit_card param', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/creditCard`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.message).toEqual(
+        'The credit_card field is required'
+      );
+    });
+  });
+
+  describe('Get Customer', () => {
+    it('should return the authorized customer', async () => {
+      const response = await request(app)
+        .get(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.name).toEqual('Habib');
     });
   });
 });

@@ -1,4 +1,8 @@
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+
+const cardKey = process.env.CARD_ENCRYPTION_KEY;
+const cardEncryptionAlgorithm = process.env.CARD_ENCRYPTION_ALGORITHM;
 
 module.exports = (sequelize, DataTypes) => {
   const Customer = sequelize.define(
@@ -60,7 +64,8 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       hooks: {
         beforeCreate: customer => customer.password && customer.hashPassword(),
-        beforeUpdate: customer => customer.password && customer.hashPassword()
+        beforeUpdate: customer => customer.password && customer.hashPassword(),
+        afterFind: customer => customer && customer.credit_card && customer.decryptCard()
       }
     }
   );
@@ -73,6 +78,16 @@ module.exports = (sequelize, DataTypes) => {
 
   Customer.prototype.validPassword = function validPassword(password) {
     return bcrypt.compare(password, this.password);
+  };
+
+  Customer.prototype.decryptCard = function decryptCard() {
+    const decipher = crypto.createDecipher(cardEncryptionAlgorithm, cardKey);
+    let dec = decipher.update(this.credit_card, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    this.credit_card = `******${dec
+      .replace(/"/g, '')
+      .substr(dec.length - 6, dec.length)}`;
+    return this.credit_card;
   };
 
   return Customer;

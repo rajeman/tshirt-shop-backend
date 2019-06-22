@@ -7,13 +7,15 @@ const {
   loginCustomer,
   updateCustomer,
   getCustomerById,
-  updateCustomerAddress
+  updateCustomerAddress,
+  updateCustomerCreditCard
 } = customers;
 const {
   verifyRegistrationFields,
   verifyLoginFields,
   verifyUpdateFields,
-  verifyAddressFields
+  verifyAddressFields,
+  verifyCreditCard
 } = customersMiddleware;
 const { verifyToken } = authentication;
 
@@ -23,10 +25,12 @@ customersRouter
   .post(verifyRegistrationFields, registerCustomer)
   .put(verifyToken, verifyUpdateFields, updateCustomer)
   .get(verifyToken, getCustomerById);
-
 customersRouter.route('/login').post(verifyLoginFields, loginCustomer);
 customersRouter
   .route('/address')
   .put(verifyToken, verifyAddressFields, updateCustomerAddress);
+customersRouter
+  .route('/creditCard')
+  .put(verifyToken, verifyCreditCard, updateCustomerCreditCard);
 
 export default customersRouter;

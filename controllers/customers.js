@@ -1,5 +1,9 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import models from '../models';
+
+const cardKey = process.env.CARD_ENCRYPTION_KEY;
+const cardEncryptionAlgorithm = process.env.CARD_ENCRYPTION_ALGORITHM;
 
 const { Customer } = models;
 
@@ -82,6 +86,20 @@ export default {
       address_2: address2 || customer.address_2
     });
     updatedCustomer.password = undefined;
+    return res.send(updatedCustomer);
+  },
+  async updateCustomerCreditCard(req, res) {
+    const creditCard = req.body.credit_card;
+    const customer = await Customer.findByPk(req.decoded.customer_id);
+
+    const cipher = crypto.createCipher(cardEncryptionAlgorithm, cardKey);
+    let crypted = cipher.update(JSON.stringify(creditCard), 'utf8', 'hex');
+    crypted += cipher.final('hex');
+    const updatedCustomer = await customer.update({ credit_card: crypted });
+    updatedCustomer.password = undefined;
+    updatedCustomer.credit_card = `******${creditCard.substr(
+      creditCard.length - 4
+    )}`;
     return res.send(updatedCustomer);
   }
 };

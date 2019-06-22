@@ -1,3 +1,4 @@
+import cardValidator from 'card-validator';
 import models from '../models';
 import validators from '../helpers';
 
@@ -224,9 +225,31 @@ export default {
     if (!shippingRegion) {
       return res.status(400).send({
         code: 'USR_03',
-        // eslint-disable-next-line max-len
         message: 'shipping region with supplied id does not exist',
         field: 'shipping_region_id',
+        status: 400
+      });
+    }
+    next();
+  },
+  verifyCreditCard(req, res, next) {
+    const emptyField = ensureRequiredFields(req, ['credit_card']);
+    if (emptyField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
+        status: 400
+      });
+    }
+    const creditCard = req.body.credit_card;
+    const validatedCard = cardValidator.number(creditCard);
+
+    if (!validatedCard.isValid) {
+      return res.status(400).send({
+        code: 'USR_08',
+        message: 'this is an invalid Credit Card',
+        field: 'credit_card',
         status: 400
       });
     }
