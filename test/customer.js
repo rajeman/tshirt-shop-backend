@@ -294,4 +294,14 @@ describe('CUSTOMERS TEST SUITE', () => {
       expect(response.body.message).toEqual('name in use');
     });
   });
+
+  describe('Get Customer', () => {
+    it('should not return the authorized customer', async () => {
+      const response = await request(app)
+        .get(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.name).toEqual('Habib');
+    });
+  });
 });

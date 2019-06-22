@@ -2,7 +2,12 @@ import express from 'express';
 import { customers } from '../controllers';
 import { customersMiddleware, authentication } from '../middlewares';
 
-const { registerCustomer, loginCustomer, updateCustomer } = customers;
+const {
+  registerCustomer,
+  loginCustomer,
+  updateCustomer,
+  getCustomerById
+} = customers;
 const {
   verifyRegistrationFields,
   verifyLoginFields,
@@ -14,7 +19,8 @@ const customersRouter = express.Router();
 customersRouter
   .route('/')
   .post(verifyRegistrationFields, registerCustomer)
-  .put(verifyToken, verifyUpdateFields, updateCustomer);
+  .put(verifyToken, verifyUpdateFields, updateCustomer)
+  .get(verifyToken, getCustomerById);
 
 customersRouter.route('/login').post(verifyLoginFields, loginCustomer);
 

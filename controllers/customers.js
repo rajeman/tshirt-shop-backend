@@ -74,5 +74,23 @@ export default {
     });
     updatedCustomer.password = undefined;
     return res.send(updatedCustomer);
+  },
+  async getCustomerById(req, res) {
+    const customer = await Customer.findByPk(req.decoded.customer_id);
+    return res.send({
+      name: customer.name,
+      email: customer.email,
+      customer_id: customer.customer_id,
+      address_1: customer.address_1,
+      address_2: customer.address_2,
+      city: customer.city,
+      region: customer.region,
+      postal_code: customer.postal_code,
+      shipping_region_id: customer.shipping_region_id,
+      credit_card: customer.credit_card,
+      day_phone: customer.day_phone,
+      eve_phone: customer.eve_phone,
+      mob_phone: customer.mob_phone
+    });
   }
 };
