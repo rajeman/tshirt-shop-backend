@@ -1,7 +1,7 @@
 import models from '../models';
 import validators from '../helpers';
 
-const { Customer } = models;
+const { Customer, ShippingRegion } = models;
 const {
   ensureRequiredFields,
   verifyFieldLength,
@@ -12,16 +12,12 @@ const {
 
 export default {
   async verifyRegistrationFields(req, res, next) {
-    const invalidField = ensureRequiredFields(req, [
-      'name',
-      'email',
-      'password'
-    ]);
-    if (invalidField) {
+    const emptyField = ensureRequiredFields(req, ['name', 'email', 'password']);
+    if (emptyField) {
       return res.status(400).send({
         code: 'USR_03',
-        message: `The ${invalidField} field is required`,
-        field: invalidField,
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
         status: 400
       });
     }
@@ -76,12 +72,12 @@ export default {
   },
 
   async verifyLoginFields(req, res, next) {
-    const invalidField = ensureRequiredFields(req, ['email', 'password']);
-    if (invalidField) {
+    const emptyField = ensureRequiredFields(req, ['email', 'password']);
+    if (emptyField) {
       return res.status(400).send({
         code: 'USR_03',
-        message: `The ${invalidField} field is required`,
-        field: invalidField,
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
         status: 400
       });
     }
@@ -108,12 +104,12 @@ export default {
     next();
   },
   async verifyUpdateFields(req, res, next) {
-    const invalidField = ensureRequiredFields(req, ['name', 'email']);
-    if (invalidField) {
+    const emptyField = ensureRequiredFields(req, ['name', 'email']);
+    if (emptyField) {
       return res.status(400).send({
         code: 'USR_03',
-        message: `The ${invalidField} field is required`,
-        field: invalidField,
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
         status: 400
       });
     }
@@ -185,6 +181,53 @@ export default {
         message: 'email in use',
         email,
         status: 409
+      });
+    }
+    next();
+  },
+  async verifyAddressFields(req, res, next) {
+    const emptyField = ensureRequiredFields(req, [
+      'address_1',
+      'city',
+      'country',
+      'region',
+      'postal_code',
+      'shipping_region_id'
+    ]);
+    if (emptyField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
+        status: 400
+      });
+    }
+
+    const invalidProvidedField = verifyOptionalFieldsLength.bind(validators)(
+      req,
+      ['address_1', 'address_2', 'city', 'country', 'region', 'postal_code'],
+      3,
+      90
+    );
+    if (invalidProvidedField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        // eslint-disable-next-line max-len
+        message: `${invalidProvidedField} must be within 3 and 90 non-whitespace characters`,
+        [invalidProvidedField]: req.body[invalidProvidedField],
+        status: 400
+      });
+    }
+    const shippingRegion = await ShippingRegion.findByPk(
+      req.body.shipping_region_id
+    );
+    if (!shippingRegion) {
+      return res.status(400).send({
+        code: 'USR_03',
+        // eslint-disable-next-line max-len
+        message: 'shipping region with supplied id does not exist',
+        field: 'shipping_region_id',
+        status: 400
       });
     }
     next();

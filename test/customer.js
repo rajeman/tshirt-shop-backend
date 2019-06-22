@@ -110,7 +110,7 @@ describe('CUSTOMERS TEST SUITE', () => {
         .set('Accept', 'application/json')
         .send({
           name: 'Mr Johnson',
-          email: 'habib7019uuuuuuuuuuuuuuuuuuuuuuu@gmail.com',
+          email: `habib7019${'a'.repeat(30)}@gmail.com`,
           password: 'habibhabib'
         });
       expect(response.body.message).toEqual('email is invalid');
@@ -302,6 +302,79 @@ describe('CUSTOMERS TEST SUITE', () => {
         .set('Accept', 'application/json')
         .set('user-key', user.token);
       expect(response.body.name).toEqual('Habib');
+    });
+  });
+
+  describe('Update Customer Address', () => {
+    it('should update a customer with valid required details', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/address`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          city: 'Paris',
+          region: 'Pacific',
+          country: 'France',
+          address_1: 'simpson street',
+          postal_code: '0231',
+          shipping_region_id: 1,
+          address_2: 'Liam street Hajoue'
+        });
+      expect(response.body.postal_code).toEqual('0231');
+    });
+
+    it('should not update a customer with missing required field', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/address`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          region: 'Pacific',
+          country: 'France',
+          address_1: 'simpson street',
+          postal_code: '0231',
+          shipping_region_id: 1,
+          address_2: 'Liam street Hajoue'
+        });
+      expect(response.body.message).toEqual('The city field is required');
+    });
+
+    it('should accept request with non-existent shipping region', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/address`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          city: 'Paris',
+          region: 'Pacific',
+          country: 'France',
+          address_1: 'simpson street',
+          postal_code: '0231',
+          shipping_region_id: 10,
+          address_2: 'Liam street Hajoue'
+        });
+      expect(response.body.message).toEqual(
+        'shipping region with supplied id does not exist'
+      );
+    });
+
+    it('should accept request with city region than 3 characters', async () => {
+      const response = await request(app)
+        .put(`${customersUrl}/address`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({
+          city: 'Paris',
+          region: 'AB',
+          country: 'France',
+          address_1: 'simpson street',
+          postal_code: '0231',
+          shipping_region_id: 10,
+          address_2: 'Liam street Hajoue'
+        });
+      expect(response.body.message).toEqual(
+        'region must be within 3 and 90 non-whitespace characters'
+      );
     });
   });
 });

@@ -6,12 +6,14 @@ const {
   registerCustomer,
   loginCustomer,
   updateCustomer,
-  getCustomerById
+  getCustomerById,
+  updateCustomerAddress
 } = customers;
 const {
   verifyRegistrationFields,
   verifyLoginFields,
-  verifyUpdateFields
+  verifyUpdateFields,
+  verifyAddressFields
 } = customersMiddleware;
 const { verifyToken } = authentication;
 
@@ -23,5 +25,8 @@ customersRouter
   .get(verifyToken, getCustomerById);
 
 customersRouter.route('/login').post(verifyLoginFields, loginCustomer);
+customersRouter
+  .route('/address')
+  .put(verifyToken, verifyAddressFields, updateCustomerAddress);
 
 export default customersRouter;

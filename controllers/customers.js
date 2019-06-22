@@ -15,13 +15,9 @@ export default {
       email,
       password
     });
-
+    customer.password = undefined;
     return res.send({
-      customer: {
-        name: customer.name,
-        email: customer.email,
-        customer_id: customer.customer_id
-      },
+      customer,
       accessToken: `Bearer ${generateToken({
         customer_id: customer.customer_id,
         name: customer.name,
@@ -33,22 +29,9 @@ export default {
 
   async loginCustomer(req, res) {
     const { customer } = req;
+    customer.password = undefined;
     return res.send({
-      customer: {
-        name: customer.name,
-        email: customer.email,
-        customer_id: customer.customer_id,
-        address_1: customer.address_1,
-        address_2: customer.address_2,
-        city: customer.city,
-        region: customer.region,
-        postal_code: customer.postal_code,
-        shipping_region_id: customer.shipping_region_id,
-        credit_card: customer.credit_card,
-        day_phone: customer.day_phone,
-        eve_phone: customer.eve_phone,
-        mob_phone: customer.mob_phone
-      },
+      customer,
       accessToken: `Bearer ${generateToken({
         customer_id: customer.customer_id,
         name: customer.name,
@@ -77,20 +60,28 @@ export default {
   },
   async getCustomerById(req, res) {
     const customer = await Customer.findByPk(req.decoded.customer_id);
-    return res.send({
-      name: customer.name,
-      email: customer.email,
-      customer_id: customer.customer_id,
-      address_1: customer.address_1,
-      address_2: customer.address_2,
-      city: customer.city,
-      region: customer.region,
-      postal_code: customer.postal_code,
-      shipping_region_id: customer.shipping_region_id,
-      credit_card: customer.credit_card,
-      day_phone: customer.day_phone,
-      eve_phone: customer.eve_phone,
-      mob_phone: customer.mob_phone
+    customer.password = undefined;
+    return res.send(customer);
+  },
+
+  async updateCustomerAddress(req, res) {
+    const { city, region, country } = req.body;
+    const address1 = req.body.address_1;
+    const address2 = req.body.address_2;
+    const postalCode = req.body.postal_code;
+    const shippingRegionId = req.body.shipping_region_id;
+
+    const customer = await Customer.findByPk(req.decoded.customer_id);
+    const updatedCustomer = await customer.update({
+      city,
+      region,
+      country,
+      address_1: address1,
+      postal_code: postalCode,
+      shipping_region_id: shippingRegionId,
+      address_2: address2 || customer.address_2
     });
+    updatedCustomer.password = undefined;
+    return res.send(updatedCustomer);
   }
 };
