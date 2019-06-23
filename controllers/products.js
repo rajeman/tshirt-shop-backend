@@ -211,7 +211,6 @@ export default {
       }))
     );
   },
-
   async postProductReview(req, res) {
     const productId = req.params.product_id;
     const { rating, review } = req.body;

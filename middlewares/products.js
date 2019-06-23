@@ -56,7 +56,8 @@ export default {
     next();
   },
   async verifyProductExists(req, res, next) {
-    const product = await Product.findByPk(req.params.product_id);
+    const productId = req.params.product_id || req.body.product_id;
+    const product = await Product.findByPk(productId);
     if (!product) {
       return res.status(404).send({
         code: 'USR_02',

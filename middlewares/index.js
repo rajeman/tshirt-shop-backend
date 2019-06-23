@@ -5,3 +5,4 @@ export { default as attributesMiddleware } from './attributes';
 export { default as departmentsMiddleware } from './departments';
 export { default as customersMiddleware } from './customers';
 export { default as authentication } from './authentication';
+export { default as shoppingCartMiddleware } from './shoppingCart';
