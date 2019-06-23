@@ -58,4 +58,13 @@ describe('SHOPPING CART TEST SUITE', () => {
       expect(response.body.message).toEqual('product already in cart');
     });
   });
+
+  describe('Get Items In Cart', () => {
+    it('should return all cart items wirh supplied cart_id', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/zx-18-2d`)
+        .set('Accept', 'application/json');
+      expect(response.body[0].product_id).toEqual(2);
+    });
+  });
 });
