@@ -101,5 +101,40 @@ export default {
       creditCard.length - 4
     )}`;
     return res.send(updatedCustomer);
+  },
+  async authenticateFacebookUser(req, res) {
+    const {
+      customer: { email, name }
+    } = req;
+    const existingCustomer = await Customer.findOne({ where: { email } });
+    if (!existingCustomer) {
+      const newCustomer = await Customer.create({
+        email,
+        name,
+        password: Math.random()
+          .toString(36)
+          .substr(2, 15)
+      });
+      newCustomer.password = undefined;
+      return res.send({
+        customer: newCustomer,
+        accessToken: `Bearer ${generateToken({
+          customer_id: newCustomer.customer_id,
+          name: newCustomer.name,
+          role: 'customer'
+        })}`,
+        expires_in: expiryTime
+      });
+    }
+    existingCustomer.password = undefined;
+    return res.send({
+      customer: existingCustomer,
+      accessToken: `Bearer ${generateToken({
+        customer_id: existingCustomer.customer_id,
+        name: existingCustomer.name,
+        role: 'customer'
+      })}`,
+      expires_in: expiryTime
+    });
   }
 };

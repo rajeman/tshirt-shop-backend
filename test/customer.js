@@ -1,11 +1,19 @@
 import expect from 'expect';
 import request from 'supertest';
+import moxios from 'moxios';
 import app from '../app';
 import user from './001-base';
 
 const customersUrl = '/api/v1/customers';
 
 describe('CUSTOMERS TEST SUITE', () => {
+  beforeEach(() => {
+    moxios.install();
+  });
+
+  afterEach(() => {
+    moxios.uninstall();
+  });
   describe('Register Customer', () => {
     it('should register a customer with valid details', async () => {
       const response = await request(app)
@@ -405,6 +413,81 @@ describe('CUSTOMERS TEST SUITE', () => {
         .set('Accept', 'application/json')
         .set('user-key', user.token);
       expect(response.body.name).toEqual('Habib');
+    });
+  });
+
+  describe('Get Facebook Auth', () => {
+    it('should not accept requests without access_token', async () => {
+      const response = await request(app)
+        .post(`${customersUrl}/facebook`)
+        .set('Accept', 'application/json');
+      expect(response.body.message).toEqual('access_token is required');
+    });
+
+    it('should authorize a new user with valid facebook token', async () => {
+      moxios.stubRequest(/https:\/\/graph.facebook.com\/me.*/, {
+        status: 200,
+        responseText: {
+          email: 'johntep@gmail.com',
+          name: 'John Tepp'
+        }
+      });
+      const response = await request(app)
+        .post(`${customersUrl}/facebook`)
+        .set('Accept', 'application/json')
+        .send({ access_token: 'some valid access token' });
+      expect(response.body.customer.email).toEqual('johntep@gmail.com');
+      expect(response.body.accessToken).toBeTruthy();
+    });
+
+    // eslint-disable-next-line max-len
+    it('should authorize a returning user with valid facebook token', async () => {
+      moxios.stubRequest(/https:\/\/graph.facebook.com\/me.*/, {
+        status: 200,
+        responseText: {
+          email: 'johntep@gmail.com',
+          name: 'John Tepp'
+        }
+      });
+      const response = await request(app)
+        .post(`${customersUrl}/facebook`)
+        .set('Accept', 'application/json')
+        .send({ access_token: 'some valid access token' });
+      expect(response.body.customer.email).toEqual('johntep@gmail.com');
+      expect(response.body.accessToken).toBeTruthy();
+    });
+
+    it('should not authorize user without facebook account email', async () => {
+      moxios.stubRequest(/https:\/\/graph.facebook.com\/me.*/, {
+        status: 200,
+        responseText: {
+          name: 'John Tepp'
+        }
+      });
+      const response = await request(app)
+        .post(`${customersUrl}/facebook`)
+        .set('Accept', 'application/json')
+        .send({ access_token: 'some valid access token' });
+      expect(response.body.message).toEqual(
+        'no facebook account email found for this user'
+      );
+    });
+
+    it('should not authorize a user with invalid facebook token', async () => {
+      moxios.stubRequest(/https:\/\/graph.facebook.com\/me.*/, {
+        status: 400,
+        responseText: {
+          email: 'johntep@gmail.com',
+          name: 'John Tepp'
+        }
+      });
+      const response = await request(app)
+        .post(`${customersUrl}/facebook`)
+        .set('Accept', 'application/json')
+        .send({ access_token: 'some invalid access token' });
+      expect(response.body.message).toEqual(
+        'Request failed with status code 400'
+      );
     });
   });
 });

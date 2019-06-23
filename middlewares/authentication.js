@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 const secret = process.env.SECRET_KEY;
 
@@ -21,5 +22,38 @@ export default {
       req.decoded = decoded;
       return next();
     });
+  },
+  async verifyFacebookToken(req, res, next) {
+    const accessToken = req.body.access_token;
+    if (!accessToken) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: 'access_token is required',
+        field: 'access_token',
+        status: 400
+      });
+    }
+    try {
+      const response = await axios.get(
+        `https://graph.facebook.com/me?access_token=${accessToken}&fields=name, email`
+      );
+      if (!response.data.email) {
+        return res.status(400).send({
+          code: 'USR_03',
+          message: 'no facebook account email found for this user',
+          field: 'fb_email',
+          status: 400
+        });
+      }
+      req.customer = response.data;
+      return next();
+    } catch (error) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: error.message,
+        field: 'access_token',
+        status: 400
+      });
+    }
   }
 };

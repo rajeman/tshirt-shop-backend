@@ -8,7 +8,8 @@ const {
   updateCustomer,
   getCustomerById,
   updateCustomerAddress,
-  updateCustomerCreditCard
+  updateCustomerCreditCard,
+  authenticateFacebookUser
 } = customers;
 const {
   verifyRegistrationFields,
@@ -17,7 +18,7 @@ const {
   verifyAddressFields,
   verifyCreditCard
 } = customersMiddleware;
-const { verifyToken } = authentication;
+const { verifyToken, verifyFacebookToken } = authentication;
 
 const customersRouter = express.Router();
 customersRouter
@@ -25,12 +26,19 @@ customersRouter
   .post(verifyRegistrationFields, registerCustomer)
   .put(verifyToken, verifyUpdateFields, updateCustomer)
   .get(verifyToken, getCustomerById);
+
 customersRouter.route('/login').post(verifyLoginFields, loginCustomer);
+
 customersRouter
   .route('/address')
   .put(verifyToken, verifyAddressFields, updateCustomerAddress);
+
 customersRouter
   .route('/creditCard')
   .put(verifyToken, verifyCreditCard, updateCustomerCreditCard);
+
+customersRouter
+  .route('/facebook')
+  .post(verifyFacebookToken, authenticateFacebookUser);
 
 export default customersRouter;
