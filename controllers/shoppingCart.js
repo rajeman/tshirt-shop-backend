@@ -58,5 +58,13 @@ export default {
     const cartId = req.item.cart_id;
     const cartItems = await getCartItems(cartId);
     return res.send(cartItems);
+  },
+
+  async deleteItemFromCart(req, res) {
+    const cartId = req.params.cart_id;
+    await ShoppingCart.destroy({
+      where: { cart_id: cartId }
+    });
+    return res.send([]);
   }
 };

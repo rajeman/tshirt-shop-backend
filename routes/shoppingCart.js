@@ -6,7 +6,8 @@ const {
   generateUniqueId,
   addProductToCart,
   getItemsInCart,
-  updateCartItem
+  updateCartItem,
+  deleteItemFromCart
 } = shoppingCart;
 const { verifyCartItemFields, verifyCartUpdateField } = shoppingCartMiddleware;
 const { verifyProductExists } = productsMiddleware;
@@ -24,5 +25,7 @@ shoppingCartRouter.route('/:cart_id').get(getItemsInCart);
 shoppingCartRouter
   .route('/update/:item_id')
   .put(verifyCartUpdateField, updateCartItem);
+
+shoppingCartRouter.route('/empty/:cart_id').delete(deleteItemFromCart);
 
 export default shoppingCartRouter;

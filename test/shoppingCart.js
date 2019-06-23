@@ -104,4 +104,13 @@ describe('SHOPPING CART TEST SUITE', () => {
       );
     });
   });
+
+  describe('Delete Items From Cart', () => {
+    it('should delete the item(s) with the supplied cartId', async () => {
+      const response = await request(app)
+        .delete(`${shoppingCartUrl}/empty/zx-18-2d`)
+        .set('Accept', 'application/json');
+      expect(response.body).toEqual([]);
+    });
+  });
 });
