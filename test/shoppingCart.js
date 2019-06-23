@@ -50,7 +50,7 @@ describe('SHOPPING CART TEST SUITE', () => {
       expect(response.body[0].product_id).toEqual(2);
     });
 
-    it('should add same product to same cart twice', async () => {
+    it('should not add same product to same cart twice', async () => {
       const response = await request(app)
         .post(`${shoppingCartUrl}/add`)
         .set('Accept', 'application/json')
@@ -60,11 +60,48 @@ describe('SHOPPING CART TEST SUITE', () => {
   });
 
   describe('Get Items In Cart', () => {
-    it('should return all cart items wirh supplied cart_id', async () => {
+    it('should return all cart items with supplied cart_id', async () => {
       const response = await request(app)
         .get(`${shoppingCartUrl}/zx-18-2d`)
         .set('Accept', 'application/json');
       expect(response.body[0].product_id).toEqual(2);
+    });
+  });
+
+  describe('Update Item In Cart', () => {
+    it('should update the item in cart', async () => {
+      const response = await request(app)
+        .put(`${shoppingCartUrl}/update/1`)
+        .set('Accept', 'application/json')
+        .send({ quantity: 10 });
+      expect(response.body[0].quantity).toEqual(10);
+    });
+
+    it('should not update item if quantity is not supplied', async () => {
+      const response = await request(app)
+        .put(`${shoppingCartUrl}/update/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.message).toEqual('The quantity field is required');
+    });
+
+    it('should not update item if quantity is not a positive integer', async () => {
+      const response = await request(app)
+        .put(`${shoppingCartUrl}/update/1`)
+        .set('Accept', 'application/json')
+        .send({ quantity: 'e' });
+      expect(response.body.message).toEqual(
+        'quantity must be a positive integer within 1 and 1000000'
+      );
+    });
+
+    it('should not accept request for non-existent item', async () => {
+      const response = await request(app)
+        .put(`${shoppingCartUrl}/update/100`)
+        .set('Accept', 'application/json')
+        .send({ quantity: 10 });
+      expect(response.body.message).toEqual(
+        'item with supplied id does not exist'
+      );
     });
   });
 });

@@ -49,5 +49,14 @@ export default {
     const cartId = req.params.cart_id;
     const cartItems = await getCartItems(cartId);
     return res.send(cartItems);
+  },
+
+  async updateCartItem(req, res) {
+    const { quantity } = req.body;
+    const quantityInt = parseInt(quantity, 10);
+    await req.item.update({ quantity: quantityInt });
+    const cartId = req.item.cart_id;
+    const cartItems = await getCartItems(cartId);
+    return res.send(cartItems);
   }
 };
