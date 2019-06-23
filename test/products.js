@@ -1,6 +1,7 @@
 import expect from 'expect';
 import request from 'supertest';
 import app from '../app';
+import user from './001-base';
 
 const productsUrl = '/api/v1/products';
 
@@ -127,6 +128,48 @@ describe('PRODUCTS TEST SUITE', () => {
         .get(`${productsUrl}/1/reviews`)
         .set('Accept', 'application/json');
       expect(response.body[0].name).toEqual('Rajeman');
+    });
+  });
+
+  describe('Post Product Review', () => {
+    it('should post a review for the product specified with id', async () => {
+      const response = await request(app)
+        .post(`${productsUrl}/1/reviews`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ review: 'Wao I am impressed', rating: 4 });
+      expect(response.status).toEqual(200);
+    });
+
+    it('should not accept request with missing required field', async () => {
+      const response = await request(app)
+        .post(`${productsUrl}/1/reviews`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ review: 'Wao I am impressed' });
+      expect(response.body.message).toEqual('The rating field is required');
+    });
+
+    it('should not accept request with review less than 3 chars', async () => {
+      const response = await request(app)
+        .post(`${productsUrl}/1/reviews`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ review: 'st', rating: 2 });
+      expect(response.body.message).toEqual(
+        'review must be within 3 and 1000 characters'
+      );
+    });
+
+    it('should not accept request with non integer rating', async () => {
+      const response = await request(app)
+        .post(`${productsUrl}/1/reviews`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token)
+        .send({ review: 'st', rating: 'e' });
+      expect(response.body.message).toEqual(
+        'rating must be within 0 and 5. Decimals are ignored'
+      );
     });
   });
 });

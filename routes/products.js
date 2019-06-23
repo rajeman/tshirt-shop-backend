@@ -3,7 +3,8 @@ import { products } from '../controllers';
 import {
   productsMiddleware,
   departmentsMiddleware,
-  categoriesMiddleware
+  categoriesMiddleware,
+  authentication
 } from '../middlewares';
 
 const {
@@ -12,15 +13,19 @@ const {
   getDepartmentProducts,
   getCategoryProducts,
   getProductLocations,
-  getProductReviews
+  getProductReviews,
+  postProductReview
 } = products;
 const {
   isValidProductQueryParams,
   isQueryStringSupplied,
-  verifyProductExists
+  verifyProductExists,
+  verifyReviewParams
 } = productsMiddleware;
+
 const { verifyDepartmentExists } = departmentsMiddleware;
 const { verifyCategoryExists } = categoriesMiddleware;
+const { verifyToken } = authentication;
 
 const productsRouter = express.Router();
 
@@ -46,6 +51,14 @@ productsRouter
   .route('/:product_id/locations')
   .get(verifyProductExists, getProductLocations);
 
-productsRouter.route('/:product_id/reviews').get(getProductReviews);
+productsRouter
+  .route('/:product_id/reviews')
+  .get(getProductReviews)
+  .post(
+    verifyToken,
+    verifyProductExists,
+    verifyReviewParams,
+    postProductReview
+  );
 
 export default productsRouter;

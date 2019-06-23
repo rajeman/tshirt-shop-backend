@@ -210,5 +210,21 @@ export default {
         created_on: review.created_on
       }))
     );
+  },
+
+  async postProductReview(req, res) {
+    const productId = req.params.product_id;
+    const { rating, review } = req.body;
+    await Review.create({
+      rating: parseInt(rating, 10),
+      review,
+      customer_id: req.decoded.customer_id,
+      product_id: productId,
+      created_on: new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ')
+    });
+    return res.send();
   }
 };

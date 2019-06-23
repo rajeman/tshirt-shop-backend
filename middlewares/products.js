@@ -1,6 +1,8 @@
 import models from '../models';
+import validators from '../helpers';
 
-const { Product, Department } = models;
+const { Product } = models;
+const { ensureRequiredFields, verifyFieldLength } = validators;
 
 export default {
   isValidProductQueryParams(req, res, next) {
@@ -61,6 +63,36 @@ export default {
         message: 'product with the supplied product_id not found',
         product_id: req.params.product_id,
         status: 500
+      });
+    }
+    next();
+  },
+  async verifyReviewParams(req, res, next) {
+    const emptyField = ensureRequiredFields(req, ['review', 'rating']);
+    if (emptyField) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: `The ${emptyField} field is required`,
+        field: emptyField,
+        status: 400
+      });
+    }
+    const { rating, review } = req.body;
+    const ratingInt = parseInt(rating, 10);
+    if (Number.isNaN(ratingInt) || ratingInt < 0 || ratingInt > 5) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: 'rating must be within 0 and 5. Decimals are ignored',
+        field: 'rating',
+        status: 400
+      });
+    }
+    if (verifyFieldLength(review, 3, 1000)) {
+      return res.status(400).send({
+        code: 'USR_03',
+        message: 'review must be within 3 and 1000 characters',
+        field: review,
+        status: 400
       });
     }
     next();

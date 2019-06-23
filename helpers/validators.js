@@ -5,7 +5,7 @@ export default {
   ensureRequiredFields(req, requiredFields) {
     for (let i = 0; i < requiredFields.length; i++) {
       const field = requiredFields[i];
-      if (!req.body[field]) {
+      if (req.body[field] === undefined || req.body[field] === null) {
         return field;
       }
     }

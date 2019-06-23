@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       review_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
       },
       customer_id: {
         type: DataTypes.INTEGER,
