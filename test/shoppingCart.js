@@ -105,6 +105,15 @@ describe('SHOPPING CART TEST SUITE', () => {
     });
   });
 
+  describe('Get Total Amount of Items in Cart', () => {
+    it('should get the total amount of items in cart', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/totalAmount/zx-18-2d`)
+        .set('Accept', 'application/json');
+      expect(response.body.total_amount).toEqual(10);
+    });
+  });
+
   describe('Delete Items From Cart', () => {
     it('should delete the item(s) with the supplied cartId', async () => {
       const response = await request(app)

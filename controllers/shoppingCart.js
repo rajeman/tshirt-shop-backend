@@ -6,7 +6,12 @@ const { ShoppingCart, Product } = models;
 const getCartItems = async (cartId) => {
   const allItemsInSameCart = await ShoppingCart.findAll({
     where: { cart_id: cartId },
-    include: [{ model: Product, attributes: ['name', 'image', 'price'] }]
+    include: [
+      {
+        model: Product,
+        attributes: ['name', 'image', 'price', 'discounted_price']
+      }
+    ]
   });
 
   return allItemsInSameCart.map(item => ({
@@ -17,7 +22,11 @@ const getCartItems = async (cartId) => {
     name: item.Product.name,
     image: item.Product.image,
     price: item.Product.price,
-    subtotal: (parseFloat(item.Product.price) * item.quantity).toFixed(2)
+    subtotal: (
+      (parseFloat(item.Product.price)
+        - parseFloat(item.Product.discounted_price))
+      * item.quantity
+    ).toFixed(2)
   }));
 };
 
@@ -66,5 +75,16 @@ export default {
       where: { cart_id: cartId }
     });
     return res.send([]);
+  },
+
+  async getTotalAmountInCart(req, res) {
+    const cartId = req.params.cart_id;
+    const cartItems = await getCartItems(cartId);
+    return res.send({
+      total_amount: cartItems.reduce(
+        (previous, current) => previous + Number(current.subtotal),
+        0
+      )
+    });
   }
 };

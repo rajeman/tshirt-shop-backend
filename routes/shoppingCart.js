@@ -7,7 +7,8 @@ const {
   addProductToCart,
   getItemsInCart,
   updateCartItem,
-  deleteItemFromCart
+  deleteItemFromCart,
+  getTotalAmountInCart
 } = shoppingCart;
 const { verifyCartItemFields, verifyCartUpdateField } = shoppingCartMiddleware;
 const { verifyProductExists } = productsMiddleware;
@@ -27,5 +28,7 @@ shoppingCartRouter
   .put(verifyCartUpdateField, updateCartItem);
 
 shoppingCartRouter.route('/empty/:cart_id').delete(deleteItemFromCart);
+
+shoppingCartRouter.route('/totalAmount/:cart_id').get(getTotalAmountInCart);
 
 export default shoppingCartRouter;
