@@ -9,7 +9,8 @@ const {
   updateCartItem,
   deleteItemFromCart,
   getTotalAmountInCart,
-  saveItemForLater
+  saveItemForLater,
+  getItemSavedForLater
 } = shoppingCart;
 const {
   verifyCartItemFields,
@@ -39,5 +40,7 @@ shoppingCartRouter.route('/totalAmount/:cart_id').get(getTotalAmountInCart);
 shoppingCartRouter
   .route('/saveForLater/:item_id')
   .get(verifyItemExists, saveItemForLater);
+
+shoppingCartRouter.route('/getSaved/:cart_id').get(getItemSavedForLater);
 
 export default shoppingCartRouter;

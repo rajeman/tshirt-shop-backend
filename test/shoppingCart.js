@@ -132,6 +132,15 @@ describe('SHOPPING CART TEST SUITE', () => {
     });
   });
 
+  describe('Get Saved Items', () => {
+    it('should return the saved items in supplied cart', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/getSaved/zx-18-2d`)
+        .set('Accept', 'application/json');
+      expect(response.body[0].product_id).toEqual(2);
+    });
+  });
+
   describe('Delete Items From Cart', () => {
     it('should delete the item(s) with the supplied cartId', async () => {
       const response = await request(app)

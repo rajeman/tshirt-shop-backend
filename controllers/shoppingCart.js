@@ -3,9 +3,9 @@ import models from '../models';
 
 const { ShoppingCart, Product } = models;
 
-const getCartItems = async (cartId) => {
+const getCartItems = async (cartId, savedForLater) => {
   const allItemsInSameCart = await ShoppingCart.findAll({
-    where: { cart_id: cartId, buy_now: true },
+    where: { cart_id: cartId, buy_now: !savedForLater },
     include: [
       {
         model: Product,
@@ -91,5 +91,11 @@ export default {
   async saveItemForLater(req, res) {
     await req.item.update({ buy_now: false });
     return res.send();
+  },
+
+  async getItemSavedForLater(req, res) {
+    const cartId = req.params.cart_id;
+    const cartItems = await getCartItems(cartId, true);
+    return res.send(cartItems);
   }
 };
