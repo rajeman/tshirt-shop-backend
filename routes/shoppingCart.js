@@ -7,6 +7,7 @@ const {
   addProductToCart,
   getItemsInCart,
   updateCartItem,
+  deleteItemsFromCart,
   deleteItemFromCart,
   getTotalAmountInCart,
   saveItemForLater,
@@ -33,7 +34,7 @@ shoppingCartRouter
   .route('/update/:item_id')
   .put(verifyCartUpdateField, updateCartItem);
 
-shoppingCartRouter.route('/empty/:cart_id').delete(deleteItemFromCart);
+shoppingCartRouter.route('/empty/:cart_id').delete(deleteItemsFromCart);
 
 shoppingCartRouter.route('/totalAmount/:cart_id').get(getTotalAmountInCart);
 
@@ -42,5 +43,7 @@ shoppingCartRouter
   .get(verifyItemExists, saveItemForLater);
 
 shoppingCartRouter.route('/getSaved/:cart_id').get(getItemSavedForLater);
+
+shoppingCartRouter.route('/removeProduct/:item_id').delete(deleteItemFromCart);
 
 export default shoppingCartRouter;

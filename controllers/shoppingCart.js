@@ -69,7 +69,7 @@ export default {
     return res.send(cartItems);
   },
 
-  async deleteItemFromCart(req, res) {
+  async deleteItemsFromCart(req, res) {
     const cartId = req.params.cart_id;
     await ShoppingCart.destroy({
       where: { cart_id: cartId, buy_now: true }
@@ -97,5 +97,13 @@ export default {
     const cartId = req.params.cart_id;
     const cartItems = await getCartItems(cartId, true);
     return res.send(cartItems);
+  },
+
+  async deleteItemFromCart(req, res) {
+    const itemId = req.params.item_id;
+    await ShoppingCart.destroy({
+      where: { item_id: itemId }
+    });
+    return res.send();
   }
 };
