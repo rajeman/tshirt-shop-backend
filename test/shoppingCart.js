@@ -141,6 +141,15 @@ describe('SHOPPING CART TEST SUITE', () => {
     });
   });
 
+  describe('Move Item To Cart', () => {
+    it('should move the item to cart', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/movetocart/1`)
+        .set('Accept', 'application/json');
+      expect(response.body).toEqual({});
+    });
+  });
+
   describe('Delete Items From Cart', () => {
     it('should delete the item with the supplied item_id', async () => {
       const response = await request(app)

@@ -11,7 +11,8 @@ const {
   deleteItemFromCart,
   getTotalAmountInCart,
   saveItemForLater,
-  getItemSavedForLater
+  getItemSavedForLater,
+  moveItemToCart
 } = shoppingCart;
 const {
   verifyCartItemFields,
@@ -28,8 +29,6 @@ shoppingCartRouter
   .route('/add')
   .post(verifyCartItemFields, verifyProductExists, addProductToCart);
 
-shoppingCartRouter.route('/:cart_id').get(getItemsInCart);
-
 shoppingCartRouter
   .route('/update/:item_id')
   .put(verifyCartUpdateField, updateCartItem);
@@ -42,8 +41,14 @@ shoppingCartRouter
   .route('/saveForLater/:item_id')
   .get(verifyItemExists, saveItemForLater);
 
+shoppingCartRouter
+  .route('/moveToCart/:item_id')
+  .get(verifyItemExists, moveItemToCart);
+
 shoppingCartRouter.route('/getSaved/:cart_id').get(getItemSavedForLater);
 
 shoppingCartRouter.route('/removeProduct/:item_id').delete(deleteItemFromCart);
+
+shoppingCartRouter.route('/:cart_id').get(getItemsInCart);
 
 export default shoppingCartRouter;

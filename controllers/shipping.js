@@ -9,9 +9,9 @@ export default {
   },
 
   async getShippingsByRegionId(req, res) {
-    const shippingReginId = req.params.shipping_region_id;
+    const shippingRegionId = req.params.shipping_region_id;
     const shippings = await Shipping.findAll({
-      where: { shipping_region_id: shippingReginId }
+      where: { shipping_region_id: shippingRegionId }
     });
 
     return res.send(shippings);

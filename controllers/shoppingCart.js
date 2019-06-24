@@ -93,6 +93,11 @@ export default {
     return res.send();
   },
 
+  async moveItemToCart(req, res) {
+    await req.item.update({ buy_now: true });
+    return res.send();
+  },
+
   async getItemSavedForLater(req, res) {
     const cartId = req.params.cart_id;
     const cartItems = await getCartItems(cartId, true);
