@@ -8,7 +8,8 @@ import {
   attributeRoutes,
   departmentRoutes,
   customerRoutes,
-  shoppingCartRoutes
+  shoppingCartRoutes,
+  shippingRegionRoutes
 } from './routes';
 import { errorHandler } from './middlewares';
 
@@ -38,6 +39,7 @@ app.use('/api/v1/attributes', attributeRoutes);
 app.use('/api/v1/departments', departmentRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/shoppingcart', shoppingCartRoutes);
+app.use('/api/v1/shipping', shippingRegionRoutes);
 app.use(errorHandler);
 
 export default app;
