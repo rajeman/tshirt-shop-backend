@@ -86,5 +86,19 @@ export default {
     }
     req.item = item;
     next();
+  },
+  async verifyItemExists(req, res, next) {
+    const itemId = req.params.item_id;
+    const item = await ShoppingCart.findByPk(itemId);
+    if (!item) {
+      return res.status(404).send({
+        code: 'USR_03',
+        message: 'item with supplied id does not exist',
+        item_id: itemId,
+        status: 404
+      });
+    }
+    req.item = item;
+    next();
   }
 };

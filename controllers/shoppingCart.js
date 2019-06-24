@@ -5,7 +5,7 @@ const { ShoppingCart, Product } = models;
 
 const getCartItems = async (cartId) => {
   const allItemsInSameCart = await ShoppingCart.findAll({
-    where: { cart_id: cartId },
+    where: { cart_id: cartId, buy_now: true },
     include: [
       {
         model: Product,
@@ -72,7 +72,7 @@ export default {
   async deleteItemFromCart(req, res) {
     const cartId = req.params.cart_id;
     await ShoppingCart.destroy({
-      where: { cart_id: cartId }
+      where: { cart_id: cartId, buy_now: true }
     });
     return res.send([]);
   },
@@ -86,5 +86,10 @@ export default {
         0
       )
     });
+  },
+
+  async saveItemForLater(req, res) {
+    await req.item.update({ buy_now: false });
+    return res.send();
   }
 };

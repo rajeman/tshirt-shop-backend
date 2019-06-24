@@ -114,6 +114,24 @@ describe('SHOPPING CART TEST SUITE', () => {
     });
   });
 
+  describe('Save An Item For Later', () => {
+    it('should save the item for later', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/saveForLater/1`)
+        .set('Accept', 'application/json');
+      expect(response.body).toEqual({});
+    });
+
+    it('should not accept request with non-existing item id', async () => {
+      const response = await request(app)
+        .get(`${shoppingCartUrl}/saveForLater/10`)
+        .set('Accept', 'application/json');
+      expect(response.body.message).toEqual(
+        'item with supplied id does not exist'
+      );
+    });
+  });
+
   describe('Delete Items From Cart', () => {
     it('should delete the item(s) with the supplied cartId', async () => {
       const response = await request(app)

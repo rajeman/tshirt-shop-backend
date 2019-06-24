@@ -8,9 +8,14 @@ const {
   getItemsInCart,
   updateCartItem,
   deleteItemFromCart,
-  getTotalAmountInCart
+  getTotalAmountInCart,
+  saveItemForLater
 } = shoppingCart;
-const { verifyCartItemFields, verifyCartUpdateField } = shoppingCartMiddleware;
+const {
+  verifyCartItemFields,
+  verifyCartUpdateField,
+  verifyItemExists
+} = shoppingCartMiddleware;
 const { verifyProductExists } = productsMiddleware;
 
 const shoppingCartRouter = express.Router();
@@ -30,5 +35,9 @@ shoppingCartRouter
 shoppingCartRouter.route('/empty/:cart_id').delete(deleteItemFromCart);
 
 shoppingCartRouter.route('/totalAmount/:cart_id').get(getTotalAmountInCart);
+
+shoppingCartRouter
+  .route('/saveForLater/:item_id')
+  .get(verifyItemExists, saveItemForLater);
 
 export default shoppingCartRouter;
