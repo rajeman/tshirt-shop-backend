@@ -6,3 +6,4 @@ export { default as customerRoutes } from './customers';
 export { default as shoppingCartRoutes } from './shoppingCart';
 export { default as shippingRegionRoutes } from './shipping';
 export { default as taxRoutes } from './tax';
+export { default as stripeRoutes } from './stripe';

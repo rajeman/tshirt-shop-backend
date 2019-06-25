@@ -6,3 +6,4 @@ export { default as customers } from './customers';
 export { default as shoppingCart } from './shoppingCart';
 export { default as shippingRegion } from './shipping';
 export { default as tax } from './tax';
+export { default as stripe } from './stripe';

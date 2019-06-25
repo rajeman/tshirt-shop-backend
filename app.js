@@ -10,7 +10,8 @@ import {
   customerRoutes,
   shoppingCartRoutes,
   shippingRegionRoutes,
-  taxRoutes
+  taxRoutes,
+  stripeRoutes
 } from './routes';
 import { errorHandler } from './middlewares';
 
@@ -42,6 +43,7 @@ app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/shoppingcart', shoppingCartRoutes);
 app.use('/api/v1/shipping', shippingRegionRoutes);
 app.use('/api/v1/tax', taxRoutes);
+app.use('/api/v1/stripe', stripeRoutes);
 app.use(errorHandler);
 
 export default app;

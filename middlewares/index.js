@@ -6,3 +6,5 @@ export { default as departmentsMiddleware } from './departments';
 export { default as customersMiddleware } from './customers';
 export { default as authentication } from './authentication';
 export { default as shoppingCartMiddleware } from './shoppingCart';
+export { default as stripeMiddleware } from './stripe';
+export { default as ordersMiddleware } from './orders';
