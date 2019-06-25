@@ -58,5 +58,33 @@ export default {
         subt_total: (item.quantity * item.unit_cost).toFixed(2)
       }))
     );
+  },
+
+  async getShortOrderDetails(req, res) {
+    const orderDetail = await Order.findByPk(req.params.order_id);
+    return res.send({
+      order_id: orderDetail.order_id,
+      total_amount: orderDetail.total_amount,
+      created_on: orderDetail.created_on,
+      shipped_on: orderDetail.shipped_on,
+      status: orderDetail.status,
+      name: req.decoded.name
+    });
+  },
+
+  async getCustomersOrders(req, res) {
+    const orderDetails = await Order.findAll({
+      where: { customer_id: req.decoded.customer_id }
+    });
+    return res.send(
+      orderDetails.map(orderDetail => ({
+        order_id: orderDetail.order_id,
+        total_amount: orderDetail.total_amount,
+        created_on: orderDetail.created_on,
+        shipped_on: orderDetail.shipped_on,
+        status: orderDetail.status,
+        name: req.decoded.name
+      }))
+    );
   }
 };

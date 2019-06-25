@@ -75,7 +75,7 @@ describe('ORDER TEST SUITE', () => {
   });
 
   describe('Get Order Details', async () => {
-    it('get the details of an order', async () => {
+    it('should get the details of an order', async () => {
       const response = await request(app)
         .get(`${orderUrl}/2`)
         .set('Accept', 'application/json')
@@ -89,6 +89,22 @@ describe('ORDER TEST SUITE', () => {
         .set('Accept', 'application/json')
         .set('user-key', user.token);
       expect(response.body.message).toBe('order not found for user');
+    });
+
+    it('should get all orders of a customer', async () => {
+      const response = await request(app)
+        .get(`${orderUrl}/inCustomer`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.length).toBe(2);
+    });
+
+    it('should get short details of an order', async () => {
+      const response = await request(app)
+        .get(`${orderUrl}/shortDetail/2`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.name).toEqual('Habib');
     });
   });
 });
