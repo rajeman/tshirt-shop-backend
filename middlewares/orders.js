@@ -21,6 +21,18 @@ export default {
     }
     next();
   },
+  async verifyUserMadeOrder(req, res, next) {
+    const order = await Order.findByPk(req.params.order_id);
+    if (!order || order.customer_id !== req.decoded.customer_id) {
+      return res.status(404).send({
+        code: 'USR_02',
+        message: 'order not found for user',
+        order_id: req.params.order_id || req.body.order_id,
+        status: 404
+      });
+    }
+    next();
+  },
   async verifyOrderFields(req, res, next) {
     const emptyField = ensureRequiredFields(req, [
       'cart_id',

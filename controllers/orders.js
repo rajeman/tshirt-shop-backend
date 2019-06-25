@@ -41,5 +41,22 @@ export default {
       where: { cart_id: req.body.cart_id, buy_now: true }
     });
     res.send({ orderId: newOrder.order_id });
+  },
+
+  async getOrderDetails(req, res) {
+    const orderDetails = await OrderDetail.findAll({
+      where: { order_id: req.params.order_id }
+    });
+    return res.send(
+      orderDetails.map(item => ({
+        order_id: item.order_id,
+        product_id: item.product_id,
+        attributes: item.attributes,
+        product_name: item.product_name,
+        quantity: item.quantity,
+        unit_cost: item.unit_cost,
+        subt_total: (item.quantity * item.unit_cost).toFixed(2)
+      }))
+    );
   }
 };

@@ -73,4 +73,22 @@ describe('ORDER TEST SUITE', () => {
       expect(response.body.orderId).toBe(2);
     });
   });
+
+  describe('Get Order Details', async () => {
+    it('get the details of an order', async () => {
+      const response = await request(app)
+        .get(`${orderUrl}/2`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body[0].order_id).toBe(2);
+    });
+
+    it('should reply with 404 if order not found for user', async () => {
+      const response = await request(app)
+        .get(`${orderUrl}/3`)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.message).toBe('order not found for user');
+    });
+  });
 });
