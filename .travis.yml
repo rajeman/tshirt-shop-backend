@@ -5,3 +5,10 @@ node_js:
 
 after_success:
   - npm run coverage
+
+services:
+  - mysql
+
+before_script:
+  - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS tshirtshop;'
+  - npm run db-setup
