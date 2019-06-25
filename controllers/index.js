@@ -7,3 +7,4 @@ export { default as shoppingCart } from './shoppingCart';
 export { default as shippingRegion } from './shipping';
 export { default as tax } from './tax';
 export { default as stripe } from './stripe';
+export { default as order } from './orders';

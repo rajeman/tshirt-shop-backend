@@ -379,3 +379,13 @@ INSERT INTO `review` (`review_id`, `customer_id`, `product_id`, `review`, `ratin
 INSERT INTO `customer` (`customer_id`, `name`, `email`, `password`) VALUES
        (1, 'Rajeman', 'rajeman@gmail.com', 'password'),
        (2, 'Jesse', 'jesse@gmail.com', 'password');
+
+-- Populate shopping_cart table
+INSERT INTO `shopping_cart` (`item_id`, `cart_id`, `product_id`, `attributes`, `quantity`, `buy_now`, `added_on`) VALUES
+       (1, 'abc-def', 7, 'black, 32s', 3, 1, '2017-01-01 00:00:00'),
+       (2, 'zsh-ttl', 8, 'yellow, fine', 5, 0, '2017-01-02 00:00:00'),
+       (3, 'abc-def', 9,'green, smart', 2, 1, '2017-01-07 00:00:00');
+
+-- Populate order table
+INSERT INTO `orders` (`order_id`, `total_amount`, `created_on`, `customer_id`, `shipping_id`, `tax_id`) VALUES
+       (1, 100.5, '2017-01-01 00:00:00', 3, 1, 1);

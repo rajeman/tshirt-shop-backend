@@ -22,7 +22,7 @@ describe('STRIPE TEST SUITE', () => {
       .set('Accept', 'application/json')
       .send({
         stripeToken: 'abcdefghij',
-        order_id: 10,
+        order_id: 1,
         description: 'This is a great order',
         amount: 100
       });
@@ -43,12 +43,28 @@ describe('STRIPE TEST SUITE', () => {
       .set('Accept', 'application/json')
       .send({
         stripeToken: 'some-invalid-token',
-        order_id: 10,
+        order_id: 1,
         description: 'This is a great order',
         amount: 100
       });
     expect(response.body).toEqual({});
   });
+
+  it('should not process request with invalid order_id', async () => {
+    const response = await request(app)
+      .post(`${stripeUrl}/charge`)
+      .set('Accept', 'application/json')
+      .send({
+        stripeToken: 'valid token',
+        order_id: 10,
+        description: 'nice',
+        amount: 10
+      });
+    expect(response.body.message).toEqual(
+      'order with the supplied order_id not found'
+    );
+  });
+
   it('should not accept request with missing required fields', async () => {
     const response = await request(app)
       .post(`${stripeUrl}/charge`)

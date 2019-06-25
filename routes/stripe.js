@@ -8,7 +8,9 @@ const { verifyOrderExists } = ordersMiddleware;
 
 const stripeRouter = express.Router();
 
-stripeRouter.route('/charge').post(validatePaymentFields, makePayment);
+stripeRouter
+  .route('/charge')
+  .post(validatePaymentFields, verifyOrderExists, makePayment);
 stripeRouter.route('/webhooks').post(receiveStripeData);
 
 export default stripeRouter;

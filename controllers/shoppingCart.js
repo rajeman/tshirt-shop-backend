@@ -3,7 +3,7 @@ import models from '../models';
 
 const { ShoppingCart, Product } = models;
 
-const getCartItems = async (cartId, savedForLater) => {
+export const getCartItems = async (cartId, savedForLater) => {
   const allItemsInSameCart = await ShoppingCart.findAll({
     where: { cart_id: cartId, buy_now: !savedForLater },
     include: [

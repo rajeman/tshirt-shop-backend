@@ -11,7 +11,8 @@ import {
   shoppingCartRoutes,
   shippingRegionRoutes,
   taxRoutes,
-  stripeRoutes
+  stripeRoutes,
+  orderRoutes
 } from './routes';
 import { errorHandler } from './middlewares';
 
@@ -44,6 +45,7 @@ app.use('/api/v1/shoppingcart', shoppingCartRoutes);
 app.use('/api/v1/shipping', shippingRegionRoutes);
 app.use('/api/v1/tax', taxRoutes);
 app.use('/api/v1/stripe', stripeRoutes);
+app.use('/api/v1/orders', orderRoutes);
 app.use(errorHandler);
 
 export default app;

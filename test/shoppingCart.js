@@ -71,7 +71,7 @@ describe('SHOPPING CART TEST SUITE', () => {
   describe('Update Item In Cart', () => {
     it('should update the item in cart', async () => {
       const response = await request(app)
-        .put(`${shoppingCartUrl}/update/1`)
+        .put(`${shoppingCartUrl}/update/4`)
         .set('Accept', 'application/json')
         .send({ quantity: 10 });
       expect(response.body[0].quantity).toEqual(10);
@@ -79,7 +79,7 @@ describe('SHOPPING CART TEST SUITE', () => {
 
     it('should not update item if quantity is not supplied', async () => {
       const response = await request(app)
-        .put(`${shoppingCartUrl}/update/1`)
+        .put(`${shoppingCartUrl}/update/4`)
         .set('Accept', 'application/json');
       expect(response.body.message).toEqual('The quantity field is required');
     });
@@ -117,7 +117,7 @@ describe('SHOPPING CART TEST SUITE', () => {
   describe('Save An Item For Later', () => {
     it('should save the item for later', async () => {
       const response = await request(app)
-        .get(`${shoppingCartUrl}/saveForLater/1`)
+        .get(`${shoppingCartUrl}/saveForLater/4`)
         .set('Accept', 'application/json');
       expect(response.body).toEqual({});
     });
@@ -144,7 +144,7 @@ describe('SHOPPING CART TEST SUITE', () => {
   describe('Move Item To Cart', () => {
     it('should move the item to cart', async () => {
       const response = await request(app)
-        .get(`${shoppingCartUrl}/movetocart/1`)
+        .get(`${shoppingCartUrl}/movetocart/4`)
         .set('Accept', 'application/json');
       expect(response.body).toEqual({});
     });
@@ -153,7 +153,7 @@ describe('SHOPPING CART TEST SUITE', () => {
   describe('Delete Items From Cart', () => {
     it('should delete the item with the supplied item_id', async () => {
       const response = await request(app)
-        .delete(`${shoppingCartUrl}/removeProduct/1`)
+        .delete(`${shoppingCartUrl}/removeProduct/4`)
         .set('Accept', 'application/json');
       expect(response.body).toEqual({});
     });

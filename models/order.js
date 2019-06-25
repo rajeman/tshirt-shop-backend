@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       order_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
       },
       total_amount: {
         type: DataTypes.FLOAT,
@@ -21,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        default: 0
+        defaultValue: 0
       },
       comments: {
         type: DataTypes.STRING,
