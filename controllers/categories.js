@@ -1,5 +1,8 @@
 import Sequelize from 'sequelize';
 import models from '../models';
+import cache from '../config/redis';
+
+const { getAsync, client } = cache;
 
 const { ne } = Sequelize.Op;
 const { Category, ProductCategory } = models;
@@ -23,12 +26,14 @@ export default {
     });
   },
   async getSingleCategory(req, res) {
-    const categoryId = req.params.category_id;
-    const category = await Category.findByPk(categoryId);
-    return res.send(category);
+    return res.send(req.category);
   },
   async getProductCategories(req, res) {
     const productId = req.params.product_id;
+    const cached = await getAsync(`productCategories:${productId}`);
+    if (cached) {
+      return res.send(JSON.parse(cached));
+    }
     const productCategories = await ProductCategory.findAll({
       wheres: { product_id: productId },
       include: [
@@ -39,13 +44,23 @@ export default {
         }
       ]
     });
-    return res.send(productCategories.map(item => item.Category));
+    const response = productCategories.map(item => item.Category);
+    client.set(`productCategories:${productId}`, JSON.stringify(response));
+    return res.send(response);
   },
   async getDepartmentCategories(req, res) {
     const departmentId = req.params.department_id;
+    const cached = await getAsync(`departmentCategories:${departmentId}`);
+    if (cached) {
+      return res.send(JSON.parse(cached));
+    }
     const departmentCategories = await Category.findAll({
       where: { department_id: departmentId }
     });
+    client.set(
+      `departmentCategories:${departmentId}`,
+      JSON.stringify(departmentCategories)
+    );
     return res.send(departmentCategories);
   }
 };
