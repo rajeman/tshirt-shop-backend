@@ -1,5 +1,7 @@
 import models from '../models';
+import cache from '../config/redis';
 
+const { getAsync, client } = cache;
 const { Category } = models;
 export default {
   verifyOrderParams(req, res, next) {
@@ -29,15 +31,22 @@ export default {
   },
   async verifyCategoryExists(req, res, next) {
     const categoryId = req.params.category_id;
+    const cached = await getAsync(`category:${categoryId}`);
+    if (cached) {
+      req.category = JSON.parse(cached);
+      return next();
+    }
     const category = await Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).send({
-        status: 500,
-        code: 'USR_02',
+        status: 404,
+        code: 'CAT_01',
         message: 'category not found',
         category_id: categoryId
       });
     }
+    client.set(`category:${categoryId}`, JSON.stringify(category));
+    req.category = category;
     next();
   }
 };

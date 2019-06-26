@@ -1,11 +1,19 @@
 import expect from 'expect';
 import request from 'supertest';
+import cache from '../config/redis';
+
 import app from '../app';
 import user from './001-base';
 
+const { client } = cache;
 const productsUrl = '/api/v1/products';
 
 describe('PRODUCTS TEST SUITE', () => {
+  before((done) => {
+    client.flushall(() => {
+      done();
+    });
+  });
   describe('Get Products', () => {
     it('should return 20 products when no limit param is passed', async () => {
       const response = await request(app)
@@ -28,7 +36,7 @@ describe('PRODUCTS TEST SUITE', () => {
       expect(response.body.rows[0].product_id).toEqual(21);
     });
 
-    it('should return the description_lenght specified', async () => {
+    it('should return the description_length specified', async () => {
       const response = await request(app)
         .get(`${productsUrl}?page=1&description_length=15`)
         .set('Accept', 'application/json');
@@ -115,6 +123,13 @@ describe('PRODUCTS TEST SUITE', () => {
 
   describe('Get Product Locations', () => {
     it('should return all locations of the suplied product', async () => {
+      const response = await request(app)
+        .get(`${productsUrl}/1/locations`)
+        .set('Accept', 'application/json');
+      expect(response.body[0].category_name).toEqual('French');
+    });
+
+    it('should return the caches response', async () => {
       const response = await request(app)
         .get(`${productsUrl}/1/locations`)
         .set('Accept', 'application/json');

@@ -49,14 +49,6 @@ describe('SHOPPING CART TEST SUITE', () => {
         .send({ cart_id: 'zx-18-2d', attributes: 'black', product_id: 2 });
       expect(response.body[0].product_id).toEqual(2);
     });
-
-    it('should not add same product to same cart twice', async () => {
-      const response = await request(app)
-        .post(`${shoppingCartUrl}/add`)
-        .set('Accept', 'application/json')
-        .send({ cart_id: 'zx-18-2d', attributes: 'black', product_id: 2 });
-      expect(response.body.message).toEqual('product already in cart');
-    });
   });
 
   describe('Get Items In Cart', () => {
@@ -110,7 +102,7 @@ describe('SHOPPING CART TEST SUITE', () => {
       const response = await request(app)
         .get(`${shoppingCartUrl}/totalAmount/zx-18-2d`)
         .set('Accept', 'application/json');
-      expect(response.body.total_amount).toEqual(10);
+      expect(response.body.total_amount).toEqual(159.5);
     });
   });
 

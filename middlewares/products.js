@@ -1,6 +1,8 @@
 import models from '../models';
 import validators from '../helpers';
+import cache from '../config/redis';
 
+const { getAsync, client } = cache;
 const { Product } = models;
 const { ensureRequiredFields, verifyFieldLength } = validators;
 
@@ -57,15 +59,22 @@ export default {
   },
   async verifyProductExists(req, res, next) {
     const productId = req.params.product_id || req.body.product_id;
+    const cached = await getAsync(`product:${productId}`);
+    if (cached) {
+      req.product = JSON.parse(cached);
+      return next();
+    }
     const product = await Product.findByPk(productId);
     if (!product) {
       return res.status(404).send({
-        code: 'USR_02',
+        code: 'PRD_02',
         message: 'product with the supplied product_id not found',
         product_id: req.params.product_id,
         status: 500
       });
     }
+    client.set(`product:${productId}`, JSON.stringify(product));
+    req.product = product;
     next();
   },
   async verifyReviewParams(req, res, next) {

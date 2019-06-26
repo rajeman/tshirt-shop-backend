@@ -21,12 +21,14 @@ export const getCartItems = async (cartId, savedForLater) => {
     quantity: item.quantity,
     name: item.Product.name,
     image: item.Product.image,
-    price: item.Product.price,
-    subtotal: (
-      (parseFloat(item.Product.price)
-        - parseFloat(item.Product.discounted_price))
-      * item.quantity
-    ).toFixed(2)
+    price:
+      parseFloat(item.Product.discounted_price) === 0
+        ? item.Product.price
+        : item.Product.discounted_price,
+    subtotal:
+      parseFloat(item.Product.discounted_price) === 0
+        ? (item.Product.price * item.quantity).toFixed(2)
+        : (item.Product.discounted_price * item.quantity).toFixed(2)
   }));
 };
 

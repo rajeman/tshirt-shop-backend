@@ -414,6 +414,13 @@ describe('CUSTOMERS TEST SUITE', () => {
         .set('user-key', user.token);
       expect(response.body.name).toEqual('Habib');
     });
+    it('should return the cached response', async () => {
+      const response = await request(app)
+        .get(customersUrl)
+        .set('Accept', 'application/json')
+        .set('user-key', user.token);
+      expect(response.body.name).toEqual('Habib');
+    });
   });
 
   describe('Get Facebook Auth', () => {

@@ -12,6 +12,13 @@ describe('DEPARTMENT TEST SUITE', () => {
         .set('Accept', 'application/json');
       expect(response.body.length).toEqual(3);
     });
+
+    it('should return the cached response', async () => {
+      const response = await request(app)
+        .get(departmentsUrl)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(3);
+    });
   });
 
   describe('Get Single Department', () => {
@@ -21,6 +28,14 @@ describe('DEPARTMENT TEST SUITE', () => {
         .set('Accept', 'application/json');
       expect(response.body.department_id).toEqual(2);
     });
+
+    it('should return the cached response', async () => {
+      const response = await request(app)
+        .get(`${departmentsUrl}/2`)
+        .set('Accept', 'application/json');
+      expect(response.body.department_id).toEqual(2);
+    });
+
     it('should return 404 error for a non-existing department', async () => {
       const response = await request(app)
         .get(`${departmentsUrl}/10`)

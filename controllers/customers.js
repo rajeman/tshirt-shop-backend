@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import models from '../models';
+import cache from '../config/redis';
+
+const { getAsync, client } = cache;
 
 const cardKey = process.env.CARD_ENCRYPTION_KEY;
 const cardEncryptionAlgorithm = process.env.CARD_ENCRYPTION_ALGORITHM;
@@ -49,8 +52,8 @@ export default {
     const dayPhone = req.body.day_phone;
     const evePhone = req.body.eve_phone;
     const mobPhone = req.body.mob_phone;
-
-    const customer = await Customer.findByPk(req.decoded.customer_id);
+    const customerId = req.decoded.customer_id;
+    const customer = await Customer.findByPk(customerId);
     const updatedCustomer = await customer.update({
       username,
       email,
@@ -60,15 +63,23 @@ export default {
       mob_phone: mobPhone || customer.mobPhone
     });
     updatedCustomer.password = undefined;
+    client.del(`customer:${customerId}`);
     return res.send(updatedCustomer);
   },
   async getCustomerById(req, res) {
-    const customer = await Customer.findByPk(req.decoded.customer_id);
+    const customerId = req.decoded.customer_id;
+    const cached = await getAsync(`customer:${customerId}`);
+    if (cached) {
+      return res.send(JSON.parse(cached));
+    }
+    const customer = await Customer.findByPk(customerId);
     customer.password = undefined;
+    client.set(`customer:${customerId}`, JSON.stringify(customer));
     return res.send(customer);
   },
 
   async updateCustomerAddress(req, res) {
+    const customerId = req.decoded.customer_id;
     const { city, region, country } = req.body;
     const address1 = req.body.address_1;
     const address2 = req.body.address_2;
@@ -86,11 +97,13 @@ export default {
       address_2: address2 || customer.address_2
     });
     updatedCustomer.password = undefined;
+    client.del(`customer:${customerId}`);
     return res.send(updatedCustomer);
   },
   async updateCustomerCreditCard(req, res) {
     const creditCard = req.body.credit_card;
-    const customer = await Customer.findByPk(req.decoded.customer_id);
+    const customerId = req.decoded.customer_id;
+    const customer = await Customer.findByPk(customerId);
 
     const cipher = crypto.createCipher(cardEncryptionAlgorithm, cardKey);
     let crypted = cipher.update(JSON.stringify(creditCard), 'utf8', 'hex');
@@ -100,6 +113,7 @@ export default {
     updatedCustomer.credit_card = `******${creditCard.substr(
       creditCard.length - 4
     )}`;
+    client.del(`customer:${customerId}`);
     return res.send(updatedCustomer);
   },
   async authenticateFacebookUser(req, res) {

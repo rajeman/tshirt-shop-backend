@@ -1,5 +1,8 @@
 import Sequelize from 'sequelize';
 import models from '../models';
+import cache from '../config/redis';
+
+const { getAsync, client } = cache;
 
 const {
   Product,
@@ -9,7 +12,7 @@ const {
   Review,
   Customer
 } = models;
-const { like, ne } = Sequelize.Op;
+const { like, ne, or } = Sequelize.Op;
 
 const defaultLimit = 20;
 const defaultDescriptionLength = 200;
@@ -24,7 +27,10 @@ export default {
     const allProducts = await Product.findAndCountAll({
       order: [['product_id', 'ASC']],
       where: {
-        description: { [like]: queryString ? `%${queryString}%` : '%' }
+        [or]: {
+          description: { [like]: queryString ? `%${queryString}%` : '%' },
+          name: { [like]: queryString ? `%${queryString}%` : '%' }
+        }
       },
       attributes: [
         'product_id',
@@ -44,7 +50,7 @@ export default {
         'thumbnail'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: allProducts.count,
@@ -52,8 +58,7 @@ export default {
     });
   },
   async getSingleProduct(req, res) {
-    const product = await Product.findByPk(req.params.product_id);
-    return res.send(product);
+    return res.send(req.product);
   },
   async getDepartmentProducts(req, res) {
     const limit = parseInt(req.query.limit, 10);
@@ -98,7 +103,7 @@ export default {
         'display'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: productsInDepartment.count,
@@ -155,7 +160,7 @@ export default {
         'display'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: productsInCategory.count,
@@ -172,6 +177,10 @@ export default {
   },
   async getProductLocations(req, res) {
     const productId = req.params.product_id;
+    const cached = await getAsync(`productLocation:${productId}`);
+    if (cached) {
+      return res.send(JSON.parse(cached));
+    }
     const productLocations = await ProductCategory.findAll({
       where: { product_id: productId },
       include: [
@@ -182,14 +191,14 @@ export default {
         }
       ]
     });
-    return res.send(
-      productLocations.map(productCategory => ({
-        category_id: productCategory.Category.category_id,
-        category_name: productCategory.Category.name,
-        department_id: productCategory.Category.Department.department_id,
-        department_name: productCategory.Category.Department.name
-      }))
-    );
+    const response = productLocations.map(productCategory => ({
+      category_id: productCategory.Category.category_id,
+      category_name: productCategory.Category.name,
+      department_id: productCategory.Category.Department.department_id,
+      department_name: productCategory.Category.Department.name
+    }));
+    client.set(`productLocation:${productId}`, JSON.stringify(response));
+    return res.send(response);
   },
   async getProductReviews(req, res) {
     const productId = req.params.product_id;
