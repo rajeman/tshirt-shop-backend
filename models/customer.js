@@ -62,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       freezeTableName: true,
       timestamps: false,
+      tableName: 'customer',
       hooks: {
         beforeCreate: customer => customer.password && customer.hashPassword(),
         beforeUpdate: customer => customer.password && customer.hashPassword(),

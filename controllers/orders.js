@@ -1,7 +1,8 @@
 import models from '../models';
 import { getCartItems } from './shoppingCart';
 
-const { ShoppingCart, OrderDetail, Order } = models;
+const { ShoppingCart, OrderDetail, orders } = models;
+const Order = orders;
 
 export default {
   async createOrder(req, res) {

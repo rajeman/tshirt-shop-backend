@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define(
-    'Order',
+    'orders',
     {
       order_id: {
         type: DataTypes.INTEGER,
@@ -50,9 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     {
-      freezeTableName: true,
-      timestamps: false,
-      tableName: 'orders'
+      timestamps: false
     }
   );
 

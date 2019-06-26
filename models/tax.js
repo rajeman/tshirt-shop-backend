@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       freezeTableName: true,
-      timestamps: false
+      timestamps: false,
+      tableName: 'tax'
     }
   );
 

@@ -2,8 +2,9 @@ import models from '../models';
 import validators from '../helpers';
 
 const {
-  Order, ShoppingCart, Shipping, Tax
+  orders, ShoppingCart, Shipping, Tax
 } = models;
+const Order = orders;
 const { ensureRequiredFields } = validators;
 
 export default {
