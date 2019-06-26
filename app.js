@@ -1,5 +1,4 @@
 import express from 'express';
-import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import {
@@ -14,7 +13,6 @@ import {
   stripeRoutes,
   orderRoutes
 } from './routes';
-import { errorHandler } from './middlewares';
 
 dotenv.config();
 
@@ -27,14 +25,6 @@ app.use(require('morgan')('dev'));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(
-  session({
-    secret: 'tshirt-shop',
-    cookie: { maxAge: 50000 },
-    resave: false,
-    saveUninitialized: false
-  })
-);
 
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
@@ -46,6 +36,5 @@ app.use('/api/v1/shipping', shippingRegionRoutes);
 app.use('/api/v1/tax', taxRoutes);
 app.use('/api/v1/stripe', stripeRoutes);
 app.use('/api/v1/orders', orderRoutes);
-app.use(errorHandler);
 
 export default app;

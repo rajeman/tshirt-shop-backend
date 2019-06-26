@@ -1,6 +1,8 @@
 import models from '../models';
 import validators from '../helpers';
+import cache from '../config/redis';
 
+const { getAsync, client } = cache;
 const {
   orders, ShoppingCart, Shipping, Tax
 } = models;
@@ -9,9 +11,13 @@ const { ensureRequiredFields } = validators;
 
 export default {
   async verifyOrderExists(req, res, next) {
-    const order = await Order.findByPk(
-      req.params.order_id || req.body.order_id
-    );
+    const orderId = req.params.order_id || req.body.order_id;
+    const cached = await getAsync(`order:${orderId}`);
+    if (cached) {
+      req.order = JSON.parse(cached);
+      return next();
+    }
+    const order = await Order.findByPk(orderId);
     if (!order) {
       return res.status(404).send({
         code: 'USR_02',
@@ -20,6 +26,8 @@ export default {
         status: 404
       });
     }
+    req.order = order;
+    client.set(`order:${orderId}`, JSON.stringify(order));
     next();
   },
   async verifyUserMadeOrder(req, res, next) {

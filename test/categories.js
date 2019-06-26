@@ -48,6 +48,13 @@ describe('CATEGORIES TEST SUITE', () => {
       expect(response.body.category_id).toEqual(2);
     });
 
+    it('should return the cached response', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/2`)
+        .set('Accept', 'application/json');
+      expect(response.body.category_id).toEqual(2);
+    });
+
     it('should return 404 error if category is not found', async () => {
       const response = await request(app)
         .get(`${categoriesUrl}/100`)
@@ -63,10 +70,24 @@ describe('CATEGORIES TEST SUITE', () => {
         .set('Accept', 'application/json');
       expect(response.body[0]).toHaveProperty('category_id');
     });
+
+    it('should get the cached response', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/inProduct/1`)
+        .set('Accept', 'application/json');
+      expect(response.body[0]).toHaveProperty('category_id');
+    });
   });
 
   describe('Get Department Categories', () => {
     it('should get the categories of the specified department', async () => {
+      const response = await request(app)
+        .get(`${categoriesUrl}/inDepartment/1`)
+        .set('Accept', 'application/json');
+      expect(response.body[0]).toHaveProperty('department_id');
+    });
+
+    it('should get the cached response', async () => {
       const response = await request(app)
         .get(`${categoriesUrl}/inDepartment/1`)
         .set('Accept', 'application/json');

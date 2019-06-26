@@ -1,12 +1,27 @@
 import expect from 'expect';
 import request from 'supertest';
 import app from '../app';
+import cache from '../config/redis';
+
+const { client } = cache;
 
 const attributesUrl = '/api/v1/attributes';
 
 describe('ATTRIBUTES TEST SUITE', () => {
+  before((done) => {
+    client.flushall(() => {
+      done();
+    });
+  });
   describe('Get Attributes', () => {
     it('should return all atrributes', async () => {
+      const response = await request(app)
+        .get(attributesUrl)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(2);
+    });
+
+    it('should return the cached response', async () => {
       const response = await request(app)
         .get(attributesUrl)
         .set('Accept', 'application/json');
@@ -36,7 +51,22 @@ describe('ATTRIBUTES TEST SUITE', () => {
         .set('Accept', 'application/json');
       expect(response.body.length).toEqual(14);
     });
-    it('should return 404 error for non-existing attribute', async () => {
+
+    it('should return the cached response', async () => {
+      const response = await request(app)
+        .get(`${attributesUrl}/inProduct/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(14);
+    });
+
+    it('should return the attribute values', async () => {
+      const response = await request(app)
+        .get(`${attributesUrl}/values/1`)
+        .set('Accept', 'application/json');
+      expect(response.body.length).toEqual(5);
+    });
+
+    it('should return the cached response', async () => {
       const response = await request(app)
         .get(`${attributesUrl}/values/1`)
         .set('Accept', 'application/json');

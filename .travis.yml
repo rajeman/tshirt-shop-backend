@@ -8,6 +8,7 @@ after_success:
 
 services:
   - mysql
+  - redis
 
 before_script:
   - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS tshirtshop;'
