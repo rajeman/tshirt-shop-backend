@@ -54,5 +54,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
+  Order.associate = (models) => {
+    Order.hasMany(models.OrderDetail, {
+      foreignKey: 'order_id',
+      onDelete: 'CASCADE'
+    });
+    Order.belongsTo(models.Customer, {
+      foreignKey: 'customer_id',
+      onDelete: 'CASCADE'
+    });
+    Order.belongsTo(models.Shipping, {
+      foreignKey: 'shipping_id',
+      onDelete: 'CASCADE'
+    });
+    Order.belongsTo(models.Tax, {
+      foreignKey: 'tax_id',
+      onDelete: 'CASCADE'
+    });
+  };
+
   return Order;
 };

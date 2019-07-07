@@ -15,7 +15,7 @@ describe('STRIPE TEST SUITE', () => {
 
   it('should process customer payment with valid token', async () => {
     nock('https://api.stripe.com/v1')
-      .post('/customers')
+      .post('/charges')
       .reply(200, { id: 'zixjs-sjknk', amount: 100 });
     const response = await request(app)
       .post(`${stripeUrl}/charge`)
@@ -31,7 +31,7 @@ describe('STRIPE TEST SUITE', () => {
 
   it('should not proccess payment with invalid token', async () => {
     nock('https://api.stripe.com/v1')
-      .post('/customers')
+      .post('/charge')
       .reply((url, body, cb) => {
         cb(new Error('No such token'), [
           400,
