@@ -21,12 +21,14 @@ export const getCartItems = async (cartId, savedForLater) => {
     quantity: item.quantity,
     name: item.Product.name,
     image: item.Product.image,
-    price: item.Product.price,
-    subtotal: (
-      (parseFloat(item.Product.price)
-        - parseFloat(item.Product.discounted_price))
-      * item.quantity
-    ).toFixed(2)
+    price:
+      parseFloat(item.Product.discounted_price) === 0
+        ? item.Product.price
+        : item.Product.discounted_price,
+    subtotal:
+      parseFloat(item.Product.discounted_price) === 0
+        ? (item.Product.price * item.quantity).toFixed(2)
+        : (item.Product.discounted_price * item.quantity).toFixed(2)
   }));
 };
 
@@ -42,7 +44,9 @@ export default {
     await ShoppingCart.create({
       cart_id: cartId.trim(),
       product_id: productId,
-      attributes: attributes.trim(),
+      attributes: attributes.includes('|')
+        ? attributes.trim().toLowercase()
+        : `${attributes.trim().toLowerCase()}|`,
       quantity: 1,
       buy_now: true,
       added_on: new Date()

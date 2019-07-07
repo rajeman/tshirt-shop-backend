@@ -50,13 +50,14 @@ export default {
     });
     return res.send(
       orderDetails.map(item => ({
+        item_id: item.item_id,
         order_id: item.order_id,
         product_id: item.product_id,
         attributes: item.attributes,
         product_name: item.product_name,
         quantity: item.quantity,
         unit_cost: item.unit_cost,
-        subt_total: (item.quantity * item.unit_cost).toFixed(2)
+        sub_total: (item.quantity * item.unit_cost).toFixed(2)
       }))
     );
   },

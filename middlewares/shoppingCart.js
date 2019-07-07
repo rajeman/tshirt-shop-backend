@@ -37,21 +37,6 @@ export default {
         status: 400
       });
     }
-    const productId = req.body.product_id;
-    const productInCart = await ShoppingCart.findOne({
-      where: {
-        cart_id: `${cartId}`.trim(),
-        product_id: productId
-      }
-    });
-    if (productInCart) {
-      return res.status(409).send({
-        code: 'USR_03',
-        message: 'product already in cart',
-        product_id: productId,
-        status: 409
-      });
-    }
     next();
   },
   async verifyCartUpdateField(req, res, next) {

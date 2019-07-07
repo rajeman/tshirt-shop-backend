@@ -12,7 +12,7 @@ const {
   Review,
   Customer
 } = models;
-const { like, ne } = Sequelize.Op;
+const { like, ne, or } = Sequelize.Op;
 
 const defaultLimit = 20;
 const defaultDescriptionLength = 200;
@@ -27,7 +27,10 @@ export default {
     const allProducts = await Product.findAndCountAll({
       order: [['product_id', 'ASC']],
       where: {
-        description: { [like]: queryString ? `%${queryString}%` : '%' }
+        [or]: {
+          description: { [like]: queryString ? `%${queryString}%` : '%' },
+          name: { [like]: queryString ? `%${queryString}%` : '%' }
+        }
       },
       attributes: [
         'product_id',
@@ -47,7 +50,7 @@ export default {
         'thumbnail'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: allProducts.count,
@@ -100,7 +103,7 @@ export default {
         'display'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: productsInDepartment.count,
@@ -157,7 +160,7 @@ export default {
         'display'
       ],
       limit: Number.isNaN(limit) ? defaultLimit : limit,
-      offset: Number.isNaN(page) ? 0 : (page - 1) * limit || defaultLimit
+      offset: Number.isNaN(page) ? 0 : (page - 1) * (limit || defaultLimit)
     });
     return res.send({
       count: productsInCategory.count,
