@@ -40,22 +40,28 @@ export default {
   async addProductToCart(req, res) {
     const cartId = req.body.cart_id;
     const productId = req.body.product_id;
-    const { attributes } = req.body;
-    await ShoppingCart.create({
-      cart_id: cartId.trim(),
-      product_id: productId,
-      attributes: attributes.includes('|')
-        ? attributes.trim().toLowerCase()
-        : `${attributes.trim().toLowerCase()}|`,
-      quantity: 1,
-      buy_now: true,
-      added_on: new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ')
-    });
+    const { attributes, quantity } = req.body;
+    if (!req.cartItem) {
+      await ShoppingCart.create({
+        cart_id: cartId.trim(),
+        product_id: productId,
+        attributes: attributes.includes('|')
+          ? attributes.trim().toLowerCase()
+          : `${attributes.trim().toLowerCase()}|`,
+        quantity: quantity || 1,
+        buy_now: true,
+        added_on: new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace('T', ' ')
+      });
+    } else {
+      await req.cartItem.update({
+        quantity
+      });
+    }
     const cartItems = await getCartItems(cartId);
-    return res.send(cartItems);
+    return res.status(req.cartItem ? 200 : 201).send(cartItems);
   },
 
   async getItemsInCart(req, res) {

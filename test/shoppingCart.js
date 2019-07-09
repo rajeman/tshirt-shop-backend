@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import expect from 'expect';
 import request from 'supertest';
 import app from '../app';
@@ -42,12 +43,54 @@ describe('SHOPPING CART TEST SUITE', () => {
       );
     });
 
+    it('should not accept requests with quantity supplied as non-integer', async () => {
+      const response = await request(app)
+        .post(`${shoppingCartUrl}/add`)
+        .set('Accept', 'application/json')
+        .send({
+          cart_id: 'zx-18-2d',
+          attributes: 'black',
+          product_id: 2,
+          quantity: '10'
+        });
+      expect(response.body.message).toEqual(
+        'quantity must be a positive integer'
+      );
+    });
+
     it('should add product to cart with valid fields', async () => {
       const response = await request(app)
         .post(`${shoppingCartUrl}/add`)
         .set('Accept', 'application/json')
         .send({ cart_id: 'zx-18-2d', attributes: 'black', product_id: 2 });
+      expect(response.status).toEqual(201);
       expect(response.body[0].product_id).toEqual(2);
+    });
+
+    it('should update a product if already in cart', async () => {
+      const response = await request(app)
+        .post(`${shoppingCartUrl}/add`)
+        .set('Accept', 'application/json')
+        .send({
+          cart_id: 'zx-18-2d',
+          attributes: 'black',
+          product_id: 2,
+          quantity: 10
+        });
+      expect(response.status).toEqual(200);
+      expect(response.body[0].quantity).toEqual(10);
+    });
+
+    it('should reject addition to cart if quantity is not supplied  for product already in cart', async () => {
+      const response = await request(app)
+        .post(`${shoppingCartUrl}/add`)
+        .set('Accept', 'application/json')
+        .send({
+          cart_id: 'zx-18-2d',
+          attributes: 'black',
+          product_id: 2
+        });
+      expect(response.body.message).toEqual('quantity must be supplied');
     });
   });
 

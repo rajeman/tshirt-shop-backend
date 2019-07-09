@@ -1,6 +1,8 @@
+import Sequelize from 'sequelize';
 import models from '../models';
 import validators from '../helpers';
 
+const { or } = Sequelize.Op;
 const { ShoppingCart } = models;
 const { ensureRequiredFields, verifyFieldLength } = validators;
 
@@ -37,8 +39,46 @@ export default {
         status: 400
       });
     }
+    const { quantity } = req.body;
+    if (quantity && (!Number.isInteger(quantity) || quantity <= 0)) {
+      return res.status(400).send({
+        code: 'CAT_02',
+        message: 'quantity must be a positive integer',
+        quantity,
+        status: 400
+      });
+    }
     next();
   },
+
+  async verifyItemInCart(req, res, next) {
+    const cartId = req.body.cart_id;
+    const productId = req.body.product_id;
+    const { attributes, quantity } = req.body;
+    const item = await ShoppingCart.findOne({
+      where: {
+        cart_id: cartId,
+        product_id: productId,
+        [or]: [
+          { attributes: attributes.trim().toLowerCase() },
+          { attributes: `${attributes}|`.toLowerCase().trim() }
+        ]
+      }
+    });
+    if (item) {
+      if (!quantity) {
+        return res.status(400).send({
+          code: 'SCAT_02',
+          message: 'quantity must be supplied',
+          quantity,
+          status: 400
+        });
+      }
+      req.cartItem = item;
+    }
+    next();
+  },
+
   async verifyCartUpdateField(req, res, next) {
     const emptyField = ensureRequiredFields(req, ['quantity']);
     if (emptyField) {

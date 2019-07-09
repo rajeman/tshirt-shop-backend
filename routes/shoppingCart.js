@@ -17,7 +17,8 @@ const {
 const {
   verifyCartItemFields,
   verifyCartUpdateField,
-  verifyItemExists
+  verifyItemExists,
+  verifyItemInCart
 } = shoppingCartMiddleware;
 const { verifyProductExists } = productsMiddleware;
 
@@ -27,7 +28,12 @@ shoppingCartRouter.route('/generateUniqueId').get(generateUniqueId);
 
 shoppingCartRouter
   .route('/add')
-  .post(verifyCartItemFields, verifyProductExists, addProductToCart);
+  .post(
+    verifyCartItemFields,
+    verifyProductExists,
+    verifyItemInCart,
+    addProductToCart
+  );
 
 shoppingCartRouter
   .route('/update/:item_id')
